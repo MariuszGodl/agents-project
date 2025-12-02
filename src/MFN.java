@@ -23,7 +23,7 @@ public class MFN {
         this.R = R;
         this.rho = rho;
         //create the beta vector if the above-mentioned conditions are satisfied.
-
+        this.beta = calculateBeta(R, rho);
     }
 
     private void validateInput(int m, int[] W, double[] C, int[] L, double[] R, double[] rho) {
@@ -43,18 +43,24 @@ public class MFN {
         }
     }
 
-    // tmp
-    MFN(){
-        Combinatorial tmp = new Combinatorial();
-        tmp.tests();
+    private double[] calculateBeta(double[] R, double[] rho) {
+        if ( R.length != rho.length) { throw new IllegalArgumentException("Rho and R have different size R: " + R.length + ", Rho: " + rho.length); }
+        double[] beta = new double[R.length];
+        for (int i = 0; i < R.length; i++) {
+            beta[i] = 1 + (rho[i] * ( 1 - R[i] )) / R[i];
+        }
+        return beta;
     }
 
-    class Combinatorial {
+    // tmp constructor
+    MFN(){
+        Combinatorial.tests();
+    }
 
-        Combinatorial() {}
+    private static class  Combinatorial {
 
-        public long binomial(int n, int k) {
-            if (n < 0 || k < 0 || k > n) {
+        public static long binomial(int n, int k) {
+            if (k < 0 || k > n) {
                 System.out.println("Error: Incorrect input for binomial, n: " + n + " k: " + k);
                 return -1;
             }
@@ -62,29 +68,26 @@ public class MFN {
             return factorial(n) / (factorial(k) * factorial(n - k));
         }
 
-        public long doubleFactorial(int n) {
+        public static long doubleFactorial(int n) {
             return factorial(n, 2);
         }
 
-        public long factorial(int n) {
+        public static long factorial(int n) {
             return factorial(n, 1);
         }
 
-        public long factorial(int n, int step) {
+        public static long factorial(int n, int step) {
 
             if (n < -1) {
                 System.out.println("Error: Incorrect input in factorial, n: " + n + ", step: " + step);
                 return -1;
             }
-
             if (n == 0 || n == 1) return 1;
-
             if (n == -1 && step == 2) return 1;
-
             return n * factorial(n - step, step);
         }
 
-        private void factorialTest() {
+        private static void factorialTest() {
             if (factorial(0) != 1) System.out.println("fac(0) != 1");
             if (factorial(1) != 1) System.out.println("fac(1) != 1");
             if (factorial(2) != 2) System.out.println("fac(2) != 2");
@@ -95,7 +98,7 @@ public class MFN {
             }
         }
 
-        private void doubleFactorialTest() {
+        private static void doubleFactorialTest() {
             if (doubleFactorial(0) != 1) System.out.println("dfac(0) != 1");
             if (doubleFactorial(1) != 1) System.out.println("dfac(1) != 1");
             if (doubleFactorial(2) != 2) System.out.println("dfac(2) != 2");
@@ -104,7 +107,7 @@ public class MFN {
             if (doubleFactorial(6) != 48) System.out.println("dfac(6) != 48");
         }
 
-        private void binomialTest() {
+        private static void binomialTest() {
             if (binomial(0,0) != 1) System.out.println("binomial(0,0) != 1");
             if (binomial(1,0) != 1) System.out.println("binomial(1,0) != 1");
             if (binomial(1,1) != 1) System.out.println("binomial(1,1) != 1");
@@ -122,7 +125,7 @@ public class MFN {
             if (binomial(4,-2) != -1) System.out.println("binomial(4,-2) should return -1");
         }
 
-        public void tests() {
+        public static void tests() {
             factorialTest();
             doubleFactorialTest();
             binomialTest();
