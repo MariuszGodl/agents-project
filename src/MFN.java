@@ -28,6 +28,7 @@ public class MFN {
 
     private void validateInput(int m, int[] W, double[] C, int[] L, double[] R, double[] rho) {
         //check whether the length of vectors W, C, L, R, and rho is equal to m;
+        if ( m < 0 ) {throw new IllegalArgumentException("m is negative: " + m);}
         if ( W.length != m) {throw new IllegalArgumentException("W has incorrect size: " + W.length + ", expected: " + m);}
         if ( C.length != m) {throw new IllegalArgumentException("C has incorrect size: " + C.length + ", expected: " + m);}
         if ( L.length != m) {throw new IllegalArgumentException("L has incorrect size: " + L.length + ", expected: " + m);}
@@ -55,14 +56,131 @@ public class MFN {
     // tmp constructor
     MFN(){
         Combinatorial.tests();
+        test();
+    }
+
+    private void validataInputTest(){
+        // int m, int[] W, double[] C, int[] L, double[] R, double[] rho
+        int correct_m = 3;
+        int[] correct_W = { 1, 2, 3};
+        double[] correct_C = { 2.1, 3.2, 4.1};
+        int[] correct_L = {1, 2, 3};
+        double[] correct_R = {0.1, 0, 1};
+        double[] correct_rho = {1, 2, 3};
+
+        try {
+            validateInput(correct_m, correct_W, correct_C, correct_L, correct_R, correct_rho);
+        } catch ( IllegalArgumentException e) {
+            System.out.println("validataInputTest should NOT throw an exception for correct input");
+        }
+        // test m
+        try {
+            validateInput(1, correct_W, correct_C, correct_L, correct_R, correct_rho);
+            System.out.println("validataInputTest should throw an exception for m ");
+        } catch ( IllegalArgumentException ignore) {}
+        try {
+            int[] tmp_w = {1, 2};
+            validateInput(correct_m, tmp_w, correct_C, correct_L, correct_R, correct_rho);
+            System.out.println("validataInputTest should throw an exception for W ");
+        } catch ( IllegalArgumentException ignore) {}
+        try {
+            double[] tmp_c = {1, 2};
+            validateInput(correct_m, correct_W, tmp_c, correct_L, correct_R, correct_rho);
+            System.out.println("validataInputTest should throw an exception for C ");
+        } catch ( IllegalArgumentException ignore) {}
+        try {
+            int[] tmp_L = {1, 2};
+            validateInput(correct_m, correct_W, correct_C, tmp_L, correct_R, correct_rho);
+            System.out.println("validataInputTest should throw an exception for L ");
+        } catch ( IllegalArgumentException ignore) {}
+        try {
+            double[] tmp_R = {1, 2};
+            validateInput(correct_m, correct_W, correct_C, correct_L, tmp_R, correct_rho);
+            System.out.println("validataInputTest should throw an exception for R ");
+        } catch ( IllegalArgumentException ignore) {}
+        try {
+            double[] tmp_rho = {1, 2};
+            validateInput(correct_m, correct_W, correct_C, correct_L, correct_R, tmp_rho);
+            System.out.println("validataInputTest should throw an exception for Rho");
+        } catch ( IllegalArgumentException ignore) {}
+    }
+
+    private void validateRvaluesTest() {
+        double[] R_correct = {0.0, 0.5, 1.0};
+        try {
+            validateRvalues(R_correct);
+        } catch (IllegalArgumentException e) {
+            System.out.println("validateRvaluesTest FAILED: should NOT throw exception for valid values");
+        }
+
+        double[] R_negative = {-0.1, 0.5, 0.7};
+        try {
+            validateRvalues(R_negative);
+            System.out.println("validateRvaluesTest FAILED: exception expected for value < 0");
+        } catch (IllegalArgumentException ignore) {}
+
+        double[] R_over = {0.2, 1.1, 0.5};
+        try {
+            validateRvalues(R_over);
+            System.out.println("validateRvaluesTest FAILED: exception expected for value > 1");
+        } catch (IllegalArgumentException ignore) {}
+
+        // Edge case: all values at the boundaries
+        double[] R_boundary = {0.0, 1.0};
+        try {
+            validateRvalues(R_boundary);
+        } catch (IllegalArgumentException e) {
+            System.out.println("validateRvaluesTest FAILED: should NOT throw exception for boundary values");
+        }
+    }
+
+    private void calculateBetaTest() {
+        // Correct input
+        double[] R = {0.1, 0.5, 1.0};
+        double[] rho = {1.0, 2.0, 3.0};
+        double[] expectedBeta = new double[R.length];
+
+        for (int i = 0; i < R.length; i++) {
+            expectedBeta[i] = 1 + (rho[i] * (1 - R[i])) / R[i];
+        }
+
+        try {
+            double[] beta = calculateBeta(R, rho);
+
+            boolean correct = true;
+            for (int i = 0; i < beta.length; i++) {
+                if (Math.abs(beta[i] - expectedBeta[i]) > 1e-9) { // allow small floating point error
+                    correct = false;
+                    break;
+                }
+            }
+
+            if (!correct) {System.out.println("calculateBetaTest FAILED: output does not match expected values");}
+
+        } catch (IllegalArgumentException e) {
+            System.out.println("calculateBetaTest should NOT throw an exception for correct input");
+        }
+
+        double[] R_wrong = {0.1, 0.5};
+        double[] rho_wrong = {1.0, 2.0, 3.0};
+
+        try {
+            double[] beta = calculateBeta(R_wrong, rho_wrong);
+            System.out.println("calculateBetaTest FAILED: exception expected for mismatched array lengths");
+        } catch (IllegalArgumentException ignore) {}
+    }
+
+    public void test() {
+        validataInputTest();
+        validateRvaluesTest();
+        calculateBetaTest();
     }
 
     private static class  Combinatorial {
 
         public static long binomial(int n, int k) {
             if (k < 0 || k > n) {
-                System.out.println("Error: Incorrect input for binomial, n: " + n + " k: " + k);
-                return -1;
+                throw new IllegalArgumentException("Error: Incorrect input for binomial, n: " + n + " k: " + k);
             }
 
             return factorial(n) / (factorial(k) * factorial(n - k));
@@ -73,14 +191,16 @@ public class MFN {
         }
 
         public static long factorial(int n) {
+            if (n < 0) {
+                throw new IllegalArgumentException("Error: Incorrect input for factorial, n: " + n);
+            }
             return factorial(n, 1);
         }
 
         public static long factorial(int n, int step) {
 
             if (n < -1) {
-                System.out.println("Error: Incorrect input in factorial, n: " + n + ", step: " + step);
-                return -1;
+                throw new IllegalArgumentException("Error: Incorrect input for factorial, n: " + n + " step: " + step);
             }
             if (n == 0 || n == 1) return 1;
             if (n == -1 && step == 2) return 1;
@@ -96,6 +216,10 @@ public class MFN {
             if (factorial(20) != 2432902008176640000L) {
                 System.out.println("fac(20) != 2432902008176640000");
             }
+            try {
+                factorial(-1);
+                System.out.println("factorial(-1) should throw an exception");
+            } catch (IllegalArgumentException ignored) {}
         }
 
         private static void doubleFactorialTest() {
@@ -105,24 +229,42 @@ public class MFN {
             if (doubleFactorial(3) != 3) System.out.println("dfac(3) != 3");
             if (doubleFactorial(5) != 15) System.out.println("dfac(5) != 15");
             if (doubleFactorial(6) != 48) System.out.println("dfac(6) != 48");
+            try {
+                doubleFactorial(-2);
+                System.out.println("doubleFactorial(-2) should throw an exception");
+            } catch (IllegalArgumentException ignored) {}
+            try {
+                doubleFactorial(-3);
+                System.out.println("doubleFactorial(-3) should throw an exception");
+            } catch (IllegalArgumentException ignored) {}
         }
 
         private static void binomialTest() {
-            if (binomial(0,0) != 1) System.out.println("binomial(0,0) != 1");
-            if (binomial(1,0) != 1) System.out.println("binomial(1,0) != 1");
-            if (binomial(1,1) != 1) System.out.println("binomial(1,1) != 1");
-            if (binomial(2,1) != 2) System.out.println("binomial(2,1) != 2");
-            if (binomial(3,1) != 3) System.out.println("binomial(3,1) != 3");
-            if (binomial(3,2) != 3) System.out.println("binomial(3,2) != 3");
-            if (binomial(4,2) != 6) System.out.println("binomial(4,2) != 6");
-            if (binomial(5,2) != 10) System.out.println("binomial(5,2) != 10");
-            if (binomial(6,3) != 20) System.out.println("binomial(6,3) != 20");
-            System.out.println("This error is expected");
-            if (binomial(3,5) != -1) System.out.println("binomial(3,5) should return -1");
-            System.out.println("This error is expected");
-            if (binomial(-1,1) != -1) System.out.println("binomial(-1,1) should return -1");
-            System.out.println("This error is expected");
-            if (binomial(4,-2) != -1) System.out.println("binomial(4,-2) should return -1");
+            if (binomial(0, 0) != 1) System.out.println("binomial(0,0) != 1");
+            if (binomial(1, 0) != 1) System.out.println("binomial(1,0) != 1");
+            if (binomial(1, 1) != 1) System.out.println("binomial(1,1) != 1");
+            if (binomial(2, 1) != 2) System.out.println("binomial(2,1) != 2");
+            if (binomial(3, 1) != 3) System.out.println("binomial(3,1) != 3");
+            if (binomial(3, 2) != 3) System.out.println("binomial(3,2) != 3");
+            if (binomial(4, 2) != 6) System.out.println("binomial(4,2) != 6");
+            if (binomial(5, 2) != 10) System.out.println("binomial(5,2) != 10");
+            if (binomial(6, 3) != 20) System.out.println("binomial(6,3) != 20");
+
+            // Test invalid inputs (expect exceptions)
+            try {
+                binomial(3, 5);
+                System.out.println("binomial(3,5) should throw an exception");
+            } catch (IllegalArgumentException ignored) {}
+
+            try {
+                binomial(-1, 1);
+                System.out.println("binomial(-1,1) should throw an exception");
+            } catch (IllegalArgumentException ignored) {}
+
+            try {
+                binomial(4, -2);
+                System.out.println("binomial(4,-2) should throw an exception");
+            } catch (IllegalArgumentException ignored) {}
         }
 
         public static void tests() {
