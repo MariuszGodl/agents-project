@@ -12,141 +12,121 @@ public class MFN {
     private double[] beta; // beta vector
     private ArrayList<int[]> MPs; // list of minimal paths
 
-    MFN(int m, int[] W, double[] C, int[] L, double[] R, double[] rho){
-        //check whether the length of vectors W, C, L, R, and rho is equal to m;
+    MFN(int m, int[] W, double[] C, int[] L, double[] R, double[] rho) {
+        validateInput(m, W, C, L, R, rho);
         //check whether all values of R and rho are between 0 and 1;
+        validateRvalues(R);
+        this.m = m;
+        this.W = W;
+        this.C = C;
+        this.L = L;
+        this.R = R;
+        this.rho = rho;
         //create the beta vector if the above-mentioned conditions are satisfied.
+
     }
+
+    private void validateInput(int m, int[] W, double[] C, int[] L, double[] R, double[] rho) {
+        //check whether the length of vectors W, C, L, R, and rho is equal to m;
+        if ( W.length != m) {throw new IllegalArgumentException("W has incorrect size: " + W.length + ", expected: " + m);}
+        if ( C.length != m) {throw new IllegalArgumentException("C has incorrect size: " + C.length + ", expected: " + m);}
+        if ( L.length != m) {throw new IllegalArgumentException("L has incorrect size: " + L.length + ", expected: " + m);}
+        if ( R.length != m) {throw new IllegalArgumentException("R has incorrect size: " + R.length + ", expected: " + m);}
+        if ( rho.length != m) {throw new IllegalArgumentException("Rho has incorrect size: " + rho.length + ", expected: " + m);}
+    }
+
+    private void validateRvalues(double[] R) {
+        for ( int i = 0 ; i < R.length; i++) {
+            if ( !( R[i] >= 0 && R[i] <= 1)){
+                throw new IllegalArgumentException("R has incorrect value: " + R[i] + " at position: " + i);
+            }
+        }
+    }
+
     // tmp
     MFN(){
         Combinatorial tmp = new Combinatorial();
         tmp.tests();
     }
 
-    class Combinatorial{
-        Combinatorial(){}
+    class Combinatorial {
 
-        // do we need to do it for int or double as well
-        public double binomial(int n, int k) {
-            if (k > n || n < 0 || k < 0){
-                System.out.println("Error: Incorrect input for binomial, n: " + n + " k: "+ k);
+        Combinatorial() {}
+
+        public long binomial(int n, int k) {
+            if (n < 0 || k < 0 || k > n) {
+                System.out.println("Error: Incorrect input for binomial, n: " + n + " k: " + k);
                 return -1;
             }
-            return (double) factorial(n) / (factorial(k) * factorial(n-k));
+
+            return factorial(n) / (factorial(k) * factorial(n - k));
         }
 
-        public long doubleFactorial(int n){
+        public long doubleFactorial(int n) {
             return factorial(n, 2);
         }
 
-        public long factorial(int n){ return factorial(n, 1); }
-        // might need to implement cache
+        public long factorial(int n) {
+            return factorial(n, 1);
+        }
+
         public long factorial(int n, int step) {
-            // might be a need to handle the error ndk rn
-            if ((n < -1) ) {
-                System.out.println("Error: Incorrect input value in factorial, n: " + n + ",  step: " + step);
+
+            if (n < -1) {
+                System.out.println("Error: Incorrect input in factorial, n: " + n + ", step: " + step);
                 return -1;
             }
-            if (n == 0 || n == 1 || (n == -1 && step == 2)) { return 1; }
 
-           return (n * factorial(n-step, step));
+            if (n == 0 || n == 1) return 1;
+
+            if (n == -1 && step == 2) return 1;
+
+            return n * factorial(n - step, step);
         }
 
-        private void factorialTest(){
-            if (factorial(0) != 1) {
-                System.out.println("fac(0) != 1");
-            }
-            if (factorial(1) != 1) {
-                System.out.println("fac(1) != 1");
-            }
-            if (factorial(2) != 2) {
-                System.out.println("fac(2) != 2");
-            }
-            if (factorial(3) != 6) {
-                System.out.println("fac(3) != 6");
-            }
-            if (factorial(5) != 120) {
-                System.out.println("fac(5) != 120");
+        private void factorialTest() {
+            if (factorial(0) != 1) System.out.println("fac(0) != 1");
+            if (factorial(1) != 1) System.out.println("fac(1) != 1");
+            if (factorial(2) != 2) System.out.println("fac(2) != 2");
+            if (factorial(3) != 6) System.out.println("fac(3) != 6");
+            if (factorial(5) != 120) System.out.println("fac(5) != 120");
+            if (factorial(20) != 2432902008176640000L) {
+                System.out.println("fac(20) != 2432902008176640000");
             }
         }
 
-        private void doubleFactorialTest(){
-            if (doubleFactorial(0) != 1) {
-                System.out.println("dfac(0) != 1");
-            }
-            if (doubleFactorial(1) != 1) {
-                System.out.println("dfac(1) != 1");
-            }
-            if (doubleFactorial(2) != 2) {
-                System.out.println("dfac(2) != 2");
-            }
-            if (doubleFactorial(3) != 3) {
-                System.out.println("dfac(3) != 3");
-            }
-            if (doubleFactorial(5) != 15) {
-                System.out.println("dfac(5) != 15");
-            }
-            if (doubleFactorial(6) != 48) {
-                System.out.println("dfac(6) != 48");
-            }
+        private void doubleFactorialTest() {
+            if (doubleFactorial(0) != 1) System.out.println("dfac(0) != 1");
+            if (doubleFactorial(1) != 1) System.out.println("dfac(1) != 1");
+            if (doubleFactorial(2) != 2) System.out.println("dfac(2) != 2");
+            if (doubleFactorial(3) != 3) System.out.println("dfac(3) != 3");
+            if (doubleFactorial(5) != 15) System.out.println("dfac(5) != 15");
+            if (doubleFactorial(6) != 48) System.out.println("dfac(6) != 48");
         }
 
         private void binomialTest() {
-
-            // Basic cases
-            if (binomial(0, 0) != 1) {
-                System.out.println("binomial(0,0) != 1");
-            }
-            if (binomial(1, 0) != 1) {
-                System.out.println("binomial(1,0) != 1");
-            }
-            if (binomial(1, 1) != 1) {
-                System.out.println("binomial(1,1) != 1");
-            }
-
-            // Common values
-            if (binomial(2, 1) != 2) {
-                System.out.println("binomial(2,1) != 2");
-            }
-            if (binomial(3, 1) != 3) {
-                System.out.println("binomial(3,1) != 3");
-            }
-            if (binomial(3, 2) != 3) {
-                System.out.println("binomial(3,2) != 3");
-            }
-            if (binomial(4, 2) != 6) {
-                System.out.println("binomial(4,2) != 6");
-            }
-            if (binomial(5, 2) != 10) {
-                System.out.println("binomial(5,2) != 10");
-            }
-            if (binomial(6, 3) != 20) {
-                System.out.println("binomial(6,3) != 20");
-            }
-
-            // k > n (invalid)
-            if (binomial(3, 5) != -1) {
-                System.out.println("binomial(3,5) should return -1 for invalid input");
-            }
-
-            // Negative values (invalid)
-            if (binomial(-1, 1) != -1) {
-                System.out.println("binomial(-1,1) should return -1 for invalid input");
-            }
-            if (binomial(4, -2) != -1) {
-                System.out.println("binomial(4,-2) should return -1 for invalid input");
-            }
+            if (binomial(0,0) != 1) System.out.println("binomial(0,0) != 1");
+            if (binomial(1,0) != 1) System.out.println("binomial(1,0) != 1");
+            if (binomial(1,1) != 1) System.out.println("binomial(1,1) != 1");
+            if (binomial(2,1) != 2) System.out.println("binomial(2,1) != 2");
+            if (binomial(3,1) != 3) System.out.println("binomial(3,1) != 3");
+            if (binomial(3,2) != 3) System.out.println("binomial(3,2) != 3");
+            if (binomial(4,2) != 6) System.out.println("binomial(4,2) != 6");
+            if (binomial(5,2) != 10) System.out.println("binomial(5,2) != 10");
+            if (binomial(6,3) != 20) System.out.println("binomial(6,3) != 20");
+            System.out.println("This error is expected");
+            if (binomial(3,5) != -1) System.out.println("binomial(3,5) should return -1");
+            System.out.println("This error is expected");
+            if (binomial(-1,1) != -1) System.out.println("binomial(-1,1) should return -1");
+            System.out.println("This error is expected");
+            if (binomial(4,-2) != -1) System.out.println("binomial(4,-2) should return -1");
         }
 
-
-        public void tests(){
+        public void tests() {
             factorialTest();
             doubleFactorialTest();
             binomialTest();
         }
-
     }
-
-
 
 }
