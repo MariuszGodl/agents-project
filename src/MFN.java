@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class MFN {
     private int m ;// number_of_links
@@ -17,6 +18,7 @@ public class MFN {
     private ArrayList<int[]> MPs = new ArrayList<>(); // list of minimal paths
 
     MFN(int m, int[] W, double[] C, int[] L, double[] R, double[] rho) {
+        //check whether the length of vectors W, C, L, R, and rho is equal to m;
         validateInput(m, W, C, L, R, rho);
         //check whether all values of R and rho are between 0 and 1;
         validateRvalues(R);
@@ -31,7 +33,6 @@ public class MFN {
     }
 
     private void validateInput(int m, int[] W, double[] C, int[] L, double[] R, double[] rho) {
-        //check whether the length of vectors W, C, L, R, and rho is equal to m;
         if ( m < 0 ) {throw new IllegalArgumentException("m is negative: " + m);}
         if ( W.length != m) {throw new IllegalArgumentException("W has incorrect size: " + W.length + ", expected: " + m);}
         if ( C.length != m) {throw new IllegalArgumentException("C has incorrect size: " + C.length + ", expected: " + m);}
@@ -57,10 +58,59 @@ public class MFN {
         return beta;
     }
 
+    private double[] probabilityThatLinkAExhibitsCapacity(int edge_idx) {
+
+        double local_beta = this.beta[edge_idx];
+        int local_w = this.W[edge_idx];
+        double local_r = this.R[edge_idx];
+
+        double[] res = new double[local_w + 1];
+
+        for ( int k = 0; k <= local_w; k++) {
+            if ( k >= 1 ) {
+                res[k] = (1.0 / local_beta) *
+                        ( Combinatorial.binomial( local_w, k )) *
+                        Math.pow( local_r * local_beta, k ) *
+                        Math.pow( 1 - local_r * local_beta, local_w - k);
+            } else if ( k == 0 ) {
+                res[k] = 1 - 1 / local_beta *
+                        ( 1 - Math.pow( 1 - local_r * local_beta, local_w));
+            }
+        }
+
+        return res;
+    }
+
+    public double[][] arPMF() {
+
+        double[][] res = new double[m][];
+        for ( int edge_idx = 0; edge_idx < m; edge_idx++) {
+            res[edge_idx] = probabilityThatLinkAExhibitsCapacity(edge_idx);
+        }
+        return res;
+    }
+
+    public double[][] CDF(double[][] arPMF) {
+        double[][] cdf = new double[m][];
+
+        for( int i = 0; i < m; i++ ) { cdf[i] = new double[ W[i] + 1 ]; }
+
+        for ( int edge = 0; edge < m; edge++ ) {
+            cdf[edge][0] = arPMF[edge][0];
+            for ( int k_value = 1; k_value < arPMF[edge].length; k_value++) {
+                cdf[edge][k_value] = arPMF[edge][k_value] + cdf[edge][k_value - 1];
+            }
+        }
+
+        return cdf;
+    }
+
     // tmp constructor
     MFN(){
         Combinatorial.tests();
         test();
+
+
     }
 
     private void validataInputTest(){
@@ -201,8 +251,8 @@ public class MFN {
             return factorial(n, 1);
         }
 
-        public static long factorial(int n, int step) {
 
+        public static long factorial(int n, int step) {
             if (n < -1) {
                 throw new IllegalArgumentException("Error: Incorrect input for factorial, n: " + n + " step: " + step);
             }
