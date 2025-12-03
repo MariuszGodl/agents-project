@@ -1,4 +1,8 @@
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -10,7 +14,7 @@ public class MFN {
     private double[] R; // component reliability vector
     private double[] rho; // vector of the correlation between the faults of the components
     private double[] beta; // beta vector
-    private ArrayList<int[]> MPs; // list of minimal paths
+    private ArrayList<int[]> MPs = new ArrayList<>(); // list of minimal paths
 
     MFN(int m, int[] W, double[] C, int[] L, double[] R, double[] rho) {
         validateInput(m, W, C, L, R, rho);
@@ -271,6 +275,42 @@ public class MFN {
             factorialTest();
             doubleFactorialTest();
             binomialTest();
+        }
+    }
+
+    public void getMPs(String fileName) {
+        //MPs.clear();
+        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                if (line.trim().isEmpty()) continue; // skipping empty lines
+                String[] parts = line.split(",");
+
+                // convert to ints
+                ArrayList<Integer> temp = new ArrayList<>();
+                for (String p: parts) {
+                    p = p.trim();
+                    if (!p.isEmpty()) {
+                        temp.add(Integer.parseInt(p));
+                    }
+                }
+
+                // move into int[]
+                int[] arr = new int[temp.size()];
+                for (int i = 0; i < temp.size(); i++) {
+                    arr[i] = temp.get(i);
+                }
+
+                MPs.add(arr);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void printMPs() {
+        for (int[] arr: MPs) {
+            System.out.println(Arrays.toString(arr));
         }
     }
 
