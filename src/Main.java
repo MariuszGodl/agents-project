@@ -10,10 +10,7 @@ public class Main {
         double[] rho = {0.1, 0.3, 0.5, 0.7, 0.9};
 
         MFN instance1 = new MFN(m1, W, C, L, R, rho);
-
-        double[][] tmp = instance1.arPMF();
-        for (double[] v : tmp) { System.out.println(Arrays.toString(v) + "\n"); }
-        double[][] tmp2 = instance1.CDF(tmp);
-        for (double[] v : tmp2) { System.out.println(Arrays.toString(v) + "\n"); }
+        instance1.getMPs("MPs0.csv");
+        instance1.printMPs();
     }
 }

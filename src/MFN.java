@@ -1,11 +1,7 @@
-
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public class MFN {
     private int m ;// number_of_links
@@ -105,12 +101,8 @@ public class MFN {
         return cdf;
     }
 
-    // tmp constructor
-    MFN(){
-        Combinatorial.tests();
-        test();
-
-
+    public int calculateLeadTime(int[] Mps) {
+        return 1;
     }
 
     private void validataInputTest(){
@@ -228,6 +220,7 @@ public class MFN {
         validataInputTest();
         validateRvaluesTest();
         calculateBetaTest();
+        Combinatorial.tests();
     }
 
     private static class  Combinatorial {
@@ -327,7 +320,7 @@ public class MFN {
             binomialTest();
         }
     }
-
+    
     public void getMPs(String fileName) {
         //MPs.clear();
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
