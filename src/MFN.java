@@ -139,16 +139,26 @@ public class MFN {
     }
 
     // 3rd function 1
-    // replace d with value given by the system
     private int transimtionTime(int[] Mps_local, int d) {
         double cp = maxTransmition(Mps_local);
         
         if ( cp > 0) {
-            return 0;
+            return calculateLeadTime(Mps_local) + (int) Math.ceil((double) d / maxTransmition(Mps_local));
         } else {
             return 0x7FFFFFFF; // max possible positive int
         }
 
+    }
+
+    // replace d with value given by the system might be int[]
+    public int[] transimtionTimeForAll(int d) {
+        int[] t = new int[MPs.size()]; 
+        
+        for ( int i = 0; i < MPs.size(); i++) {
+            t[i] = transimtionTime(MPs.get(i), d);
+        }
+
+        return t;
     }
 
     private void validataInputTest(){

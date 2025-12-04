@@ -18,7 +18,7 @@ public class Main {
         // 1,3,5
         // 4,3,2
         // 4,5,
-        
+
         MFN instance1 = new MFN(m1, W, C, L, R, rho);
         instance1.printMPs();
         
@@ -32,12 +32,21 @@ public class Main {
         }
 
         double[] max_transimitions = instance1.maxTransmitionForAll();
-        double[] t_correct = {40, 10, 10, 40};
+        double[] m_t_correct = {40, 10, 10, 40};
         for (int i = 0; i < max_transimitions.length; i++) { 
-            if ( max_transimitions[i] != t_correct[i]){
-                System.out.println("Error: maxTransmitionForAll works incorrect for i:" + i + " t: " + lead[i] + " correct: " + lead_correct[i]);
+            if ( max_transimitions[i] != m_t_correct[i]){
+                System.out.println("Error: maxTransmitionForAll works incorrect for i:" + i + " t: " + max_transimitions[i] + " correct: " + m_t_correct[i]);
             }
         }
+
+        int[] transimtion_time = instance1.transimtionTimeForAll(512);
+        int[] transimtion_time_correct = {25, 71, 90, 46};
+        for (int i = 0; i < transimtion_time.length; i++) { 
+            if ( transimtion_time[i] != transimtion_time_correct[i]){
+                System.out.println("Error: maxTransmitionForAll works incorrect for i:" + i + " t: " + transimtion_time[i] + " correct: " + transimtion_time_correct[i]);
+            }
+        }
+
     }
 
 
