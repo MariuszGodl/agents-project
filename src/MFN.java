@@ -161,6 +161,7 @@ public class MFN {
         return t;
     }
 
+
     private void validataInputTest(){
         // int m, int[] W, double[] C, int[] L, double[] R, double[] rho
         int correct_m = 3;
