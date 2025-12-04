@@ -102,7 +102,9 @@ public class MFN {
     }
 
     public int calculateLeadTime(int[] Mps) {
-        return 1;
+        int l = 0;
+        for ( int i : Mps) { l +=  L[i]; }
+        return l;
     }
 
     private void validataInputTest(){
