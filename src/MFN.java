@@ -101,11 +101,23 @@ public class MFN {
         return cdf;
     }
 
-    public int calculateLeadTime(int[] Mps) {
-        int l = 0;
-        for ( int i : Mps) { l +=  L[i]; }
-        return l;
+    private int calculateLeadTime(int[] Mps_local) {
+        int total_l = 0;
+        for ( int i : Mps_local) { total_l +=  L[i-1]; }
+        return total_l;
     }
+
+    public int[] calculateLeadTimeForAll() {
+        int[] total_lead = new int[MPs.size()];
+        
+        for (int i = 0; i < MPs.size(); i++){
+            int res = calculateLeadTime(MPs.get(i)); 
+            total_lead[i] = res;
+        }
+
+        return total_lead;
+    }
+
 
     private void validataInputTest(){
         // int m, int[] W, double[] C, int[] L, double[] R, double[] rho

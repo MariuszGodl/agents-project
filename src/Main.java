@@ -12,8 +12,9 @@ public class Main {
         MFN instance1 = new MFN(m1, W, C, L, R, rho);
         instance1.getMPs("MPs0.csv");
         instance1.printMPs();
-
         
+        int[] lead = instance1.calculateLeadTimeForAll();
+        for (int l : lead) { System.out.println(l); }
 
     }
 }
