@@ -138,6 +138,19 @@ public class MFN {
 
     }
 
+    // 3rd function 1
+    // replace d with value given by the system
+    private int transimtionTime(int[] Mps_local, int d) {
+        double cp = maxTransmition(Mps_local);
+        
+        if ( cp > 0) {
+            return 0;
+        } else {
+            return 0x7FFFFFFF; // max possible positive int
+        }
+
+    }
+
     private void validataInputTest(){
         // int m, int[] W, double[] C, int[] L, double[] R, double[] rho
         int correct_m = 3;
