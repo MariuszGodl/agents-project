@@ -101,9 +101,10 @@ public class MFN {
         return cdf;
     }
 
+    // 4th function in 1
     private int calculateLeadTime(int[] Mps_local) {
         int total_l = 0;
-        for ( int i : Mps_local) { total_l +=  L[i-1]; }
+        for ( int edge : Mps_local) { total_l +=  L[edge-1]; }
         return total_l;
     }
 
@@ -111,13 +112,31 @@ public class MFN {
         int[] total_lead = new int[MPs.size()];
         
         for (int i = 0; i < MPs.size(); i++){
-            int res = calculateLeadTime(MPs.get(i)); 
-            total_lead[i] = res;
+            total_lead[i] = calculateLeadTime(MPs.get(i));
         }
 
         return total_lead;
     }
 
+    // 5th function in 1 
+    // remember to make it for actual SSV not only components * capacity
+    private double maxTransmition(int[] Mps_local) {
+        double min = Double.POSITIVE_INFINITY;
+        for (int edge: Mps_local) { 
+            if (min > W[edge-1] * C[edge - 1]) { min = W[edge-1] * C[edge - 1]; }
+         }
+        return min;
+    }
+
+    public double[] maxTransmitionForAll() {
+        double[] max_transimitons = new double[MPs.size()];
+
+        for (int i = 0; i < MPs.size(); i++ ){
+            max_transimitons[i] = maxTransmition(MPs.get(i));
+        }
+        return max_transimitons;
+
+    }
 
     private void validataInputTest(){
         // int m, int[] W, double[] C, int[] L, double[] R, double[] rho
