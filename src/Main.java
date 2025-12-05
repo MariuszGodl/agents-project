@@ -1,7 +1,9 @@
+import java.util.Arrays;
 
 public class Main {
     // move it to const file later
-    private static double epsilon = 1.0e-8;
+    private static double epsilon_small = 1.0e-8;
+    private static double epsilon_medium = 1.0 * 1.0e-4; 
     public static void main(String[] args) {
         testMFN();
     }
@@ -29,7 +31,9 @@ public class Main {
         maxTransmitionForAlltestMFN(instance);
         transimtionTimeForAlltestMFN(instance);
         arPMFtestMFN(instance);
+        minimumTransmissionTime(instance);
         CDFtestMFN(instance);
+        normalCDFtestMFN(instance);
     }
         private static void calculateLeadTimeForAlltestMFN(MFN instance) {
         int[] lead = instance.calculateLeadTimeForAll();
@@ -52,7 +56,7 @@ public class Main {
     }
 
     private static void transimtionTimeForAlltestMFN(MFN instance) {
-       int[] transimtion_time = instance.transimtionTimeForAll(512);
+        int[] transimtion_time = instance.transimtionTimeForAll(512);
         int[] transimtion_time_correct = {25, 71, 90, 46};
         for (int i = 0; i < transimtion_time.length; i++) { 
             if ( transimtion_time[i] != transimtion_time_correct[i]){
@@ -61,12 +65,24 @@ public class Main {
         }
     }
 
+    private static void minimumTransmissionTime(MFN instance) {
+        int d = 512;
+        int minimum_transimition_t = instance.minimumTransmissionTime(d);
+
+        int expected = 25;
+        if (minimum_transimition_t != expected) {
+            int[] transimtions_t = instance.transimtionTimeForAll(d);
+            System.out.println("Error: minimumTransmissionTime works incorrect for min t:" + minimum_transimition_t + 
+                                " ex: " + expected + " full_list: " + Arrays.toString(transimtions_t));
+        }
+    }
+
     private static void arPMFtestMFN(MFN instance) {
         double[][] arPMF = instance.arPMF();
         for (int i = 0; i < arPMF.length; i++ ) { 
             double test = 1;
             for (int j = 0; j < arPMF[i].length; j++) { test -= arPMF[i][j]; }
-            if ( test > epsilon ) { 
+            if ( test > epsilon_small ) { 
                 System.out.println("Error: arPMFtestMFN works incorrect for i:" + i + " cum_p: " + (1 - test));
             }
         }
@@ -78,7 +94,7 @@ public class Main {
         double[][] cdf = instance.CDF(arPMF);
         for (int i = 0; i < cdf.length; i++ ) { 
             int length = cdf[i].length - 1; 
-            if ( cdf[i][length] < (1 - epsilon) ) { 
+            if ( cdf[i][length] < (1 - epsilon_small) ) { 
                 System.out.println("Error: CDFtestMFN works incorrect for i:" + i + " cum_p: " + cdf[i][length]);
             }
         }
@@ -88,7 +104,23 @@ public class Main {
         double z1 = 2;
         double p_expected = 0.97725;
         double p1 = instance.normalCDF(z1);
+        if ( Math.abs(p1) < (p_expected - epsilon_medium) ) { 
+            System.out.println("Error: normalCDFtestMFN works incorrect for p:" + p1 + " p_expected: " + p_expected);
+        }
 
+        z1 = 0;
+        p_expected = 0.5;
+        p1 = instance.normalCDF(z1);
+        if ( Math.abs(p1) < (p_expected - epsilon_medium) ) { 
+            System.out.println("Error: normalCDFtestMFN works incorrect for p:" + p1 + " p_expected: " + p_expected);
+        }
+
+        z1 = -1.96;
+        p_expected = 0.024998;
+        p1 = instance.normalCDF(z1);
+        if ( Math.abs(p1) < (p_expected - epsilon_medium) ) { 
+            System.out.println("Error: normalCDFtestMFN works incorrect for p:" + p1 + " p_expected: " + p_expected);
+        }
     }
 
 

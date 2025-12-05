@@ -161,6 +161,19 @@ public class MFN {
         return t;
     }
 
+    // 8th function 1
+    // not sure if it answer the question as we search the smallest price acreoss the all MPS 
+    public int minimumTransmissionTime(int d) {
+        int[] transimtions_t = transimtionTimeForAll(d);
+        int min_transimition_t = 0x7FFFFFFF;
+        for (int t : transimtions_t) { 
+            if ( t < min_transimition_t) { 
+                min_transimition_t = t; 
+            } 
+        }
+        return min_transimition_t;
+    }
+
     private double SeriesElement(double z, int k) {
         double nominator = Math.pow(z, 2 * k + 1);
         double denominator = Combinatorial.doubleFactorial(2*k + 1);
@@ -168,7 +181,7 @@ public class MFN {
     }
 
     private double sumApproximation(double z) {
-        int degree_of_apoximation_n = 10;//100;
+        int degree_of_apoximation_n = 20;//100;
         double sum = 0;
         for (int k = 0; k < degree_of_apoximation_n; k++) {
             sum += SeriesElement(z, k);
