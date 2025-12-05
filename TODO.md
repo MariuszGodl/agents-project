@@ -1,89 +1,86 @@
-### 2. TODO.txt
-This file breaks down the development process into actionable tasks organized by class/component.
+# Agent Systems Project TODO List (Total: 50 Points)
 
-```text
-PROJECT TODO LIST
-=================
+## PHASE 1: MFN Class (Logic & Math) - [25 pts total]
+*Ref: P. M. Kozyra, "A dictionary algorithm...", Formulae (1), (3)-(5), (8)*
 
-PHASE 1: MFN Class (Mathematical Logic)
----------------------------------------
-[ ] Implement Field Definitions:
-    - int m, int[] W, double[] C, int[] L, double[] R, double[] rho, double[] beta
-    - ArrayList MPs
-[ ] Implement Inner Class `Combinatorial`:
-    - factorial(n)
-    - binomialCoefficient(n, k)
-[ ] Implement Constructor:
-    - Validate vector lengths == m
-    - Validate R and rho values (0 to 1)
-    - Calculate `beta` vector using Formula (2) from [1]
-[ ] Implement `getMPs(String fileName)`:
+- [ ] **[1 pt]** Implement Field Definitions
+    - `int m`, `int[] W`, `double[] C`, `int[] L`, `double[] R`, `double[] rho`, `double[] beta`
+    - `ArrayList MPs`
+- [ ] **[2 pts]** Implement Inner Class `Combinatorial`
+    - `factorial(n)`
+    - `binomialCoefficient(n, k)`
+- [ ] **[2 pts]** Implement Constructor
+    - Check if vector lengths == `m`
+    - Check if `R` and `rho` values are between 0 and 1
+    - Create `beta` vector (Formula 2)
+- [ ] **[5 pts]** Implement Core Formulae Methods
+    - Implement methods for formulae (1), (3)-(5), and (8) from [1]
+- [ ] **[3 pts]** Implement `getMPs(String fileName)`
     - Read CSV file and populate `MPs` ArrayList
-[ ] Implement `CDF(double[][] arPMF)`:
-    - Create cumulative distribution function array
-[ ] Implement `normalCDF(double z)`:
-    - Approx standard normal distribution (n=100) using double factorial (!!)
-[ ] Implement `normalICDF(double u)`:
-    - Custom algorithm for Quantile function
-    - Constraint: |normalCDF(x) - u| <= 10^-7
-[ ] Implement Sample Size Calculator:
-    - Fishman Formula (12b) [2]
-[ ] Implement `randomSSV(int N, double[][] arCDF)`:
-    - Generate N random vectors
+- [ ] **[1 pt]** Implement `CDF(double[][] arPMF)`
+    - Create array of values for the cumulative distribution function
+- [ ] **[2 pts]** Implement `static double normalCDF(double z)`
+    - Approximate standard normal distribution (n=100) using double factorial (!!)
+- [ ] **[5 pts]** Implement `static double normalICDF(double u)`
+    - **Important:** Invent/use custom algorithm for Quantile function
+    - Constraint: `|normalCDF(x) - u| <= 10^-7`
+- [ ] **[1 pt]** Implement Sample Size Calculator
+    - Based on Fishman Formula (12b) [2]
+- [ ] **[3 pts]** Implement `randomSSV(int N, double[][] arCDF)`
+    - Generate `N` random SSVs
     - Use Inverse CDF method or Chen and Asau Guide Table Method [3]
 
-PHASE 2: SSVGeneratorGui Class (Interface)
-------------------------------------------
-[ ] Extend JFrame
-[ ] Add FileChooser for selecting .csv files (MPs)
-[ ] Add "Send Data" button
-[ ] Implement Listener to trigger SSVGenerator logic
+## PHASE 2: SSVGeneratorGui & Agent Setup - [7 pts total]
 
-PHASE 3: SSVGenerator Class (Agent)
------------------------------------
-[ ] Extend Agent
-[ ] Implement `setup()`:
-    - Parse arguments (epsilon, delta)
-    - Validate args (0 to 1)
-    - Launch SSVGeneratorGui
-[ ] Implement Action (triggered by GUI button):
-    - Create MFN object
-    - Display MFN parameters (W, C, L, R, rho) to console
-    - Calculate N (sample size)
-    - Call mfn.randomSSV() to generate data
-[ ] Implement Agent Communication:
-    - Search for "TT" agent in DF or by name
-    - Create ACLMessage
-    - Serialize and Send: MFN params, MPs file path, random SSVs
-[ ] Implement Receive Behavior:
-    - Wait for reply from TT
-    - Display "Estimated network reliability"
-    - doDelete() (terminate)
+- [ ] **[2 pts]** Implement SSVGenerator Agent Setup
+    - Parse arguments: `epsilon`, `delta`
+    - Validate that values are between 0 and 1 (terminate if not)
+- [ ] **[5 pts]** Implement SSVGeneratorGui (extends JFrame)
+    - File selection for MPs (`.csv`)
+    - Input/Display mechanism for MFN parameters
+    - "Send Data" button to trigger the agent logic
 
-PHASE 4: TT Class (Transmission Time Agent)
--------------------------------------------
-[ ] Extend Agent
-[ ] Implement `setup()`:
-    - Parse arguments (double d, double T)
-[ ] Implement CyclicBehaviour/OneShotBehaviour:
+## PHASE 3: SSVGenerator Agent Logic - [10 pts total]
+
+- [ ] **[1 pt]** Handle "Send Data" Action
+    - Create `MFN` object
+    - Display MFN parameters (`W`, `C`, `L`, `R`, `rho`) in console
+- [ ] **[0.5 pts]** Generate Data
+    - Call `randomSSV` to generate `N` vectors
+- [ ] **[0.5 pts]** Service Discovery
+    - Search for the "TT" agent (Transmission Times agent)
+- [ ] **[6 pts]** Implement Communication (Sender)
+    - Send `ACLMessage` to TT Agent containing:
+        1. MFN parameters
+        2. Path to MPs `.csv` file
+        3. Generated Random SSVs
+- [ ] **[2 pts]** Implement Receive & Terminate
+    - Wait for reply from TT Agent
+    - Display the "Estimated network reliability"
+    - Terminate agent (`doDelete()`)
+
+## PHASE 4: TT Class (Transmission Time Agent) - [8 pts total]
+
+- [ ] **[1 pt]** Implement TT Agent Setup
+    - Parse arguments: `double d` (flow units), `double T` (max time)
+- [ ] **[6 pts]** Implement Receive & File I/O
     - Receive message from SSVGenerator
-    - Deserialize data (MFN params, SSVs)
-[ ] Implement File Output:
-    - Write received SSVs to "SSV.csv"
-[ ] Implement Reliability Estimation:
-    - Loop through each SSV X
-    - Calculate T(d, X) using MFN Formula (8) [1]
-    - Compare T(d, X) <= T
-    - Count successes / Total N
-[ ] Implement Reply:
-    - Send the calculated probability back to SSVGenerator
+    - Write the received random SSVs to `SSV.csv`
+- [ ] **[0.5 pts]** Calculate Transmission Times
+    - For each SSV `X`, compare `T(d, X)` with max time `T` (Formula 8)
+- [ ] **[0.5 pts]** Estimate Reliability & Reply
+    - Approximate network reliability (success count / total N)
+    - Send result back to SSVGenerator
 
-PHASE 5: Testing & Validation
------------------------------
-[ ] Test Network 1 (MPs0.csv):
-    - Args: SSV(0.01, 0.01), TT(42, 15.5)
-    - Expected Result: ~0.895
-[ ] Test Network 2 (MPs1.csv):
-    - Args: SSV(0.01, 0.01), TT(36, 120)
-    - Expected Result: ~0.842
-[ ] Verify SSV.csv creation
+## PHASE 5: Validation & Testing
+
+- [ ] **Verify Network 1**
+    - Args: `SSV(0.01, 0.01)`, `TT(42, 15.5)`
+    - MPs: `MPs0.csv`
+    - Target Reliability: ~0.895
+- [ ] **Verify Network 2**
+    - Args: `SSV(0.01, 0.01)`, `TT(36, 120)`
+    - MPs: `MPs1.csv`
+    - Target Reliability: ~0.842
+- [ ] **Check Output**
+    - Ensure `SSV.csv` (or `SSVs0.csv`/`SSVs1.csv`) is created and populated.
