@@ -26,7 +26,7 @@ public class Main {
         MFN instance = new MFN(m1, W, C, L, R, rho);
         instance.printMPs();
         
-        instance.getMPs("MPs0.csv");
+        instance.getMPs("data/MPs0.csv");
         calculateLeadTimeForAlltestMFN(instance);
         maxTransmitionForAlltestMFN(instance);
         transimtionTimeForAlltestMFN(instance);
