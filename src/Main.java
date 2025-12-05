@@ -1,4 +1,3 @@
-import java.util.Arrays;
 
 public class Main {
     // move it to const file later
@@ -7,7 +6,32 @@ public class Main {
         testMFN();
     }
 
-    private static void calculateLeadTimeForAlltestMFN(MFN instance) {
+
+    private static void testMFN() {
+                
+        int m1 = 5;
+        int[] W = {4, 3, 2, 3, 2};
+        double[] C = {10, 15, 5, 15, 20};
+        int[] L = {5, 7, 6, 25, 8};
+        double[] R = {0.7, 0.65, 0.67, 0.71, 0.75};
+        double[] rho = {0.1, 0.3, 0.5, 0.7, 0.9};
+
+        //1,2,
+        // 1,3,5
+        // 4,3,2
+        // 4,5,
+
+        MFN instance = new MFN(m1, W, C, L, R, rho);
+        instance.printMPs();
+        
+        instance.getMPs("MPs0.csv");
+        calculateLeadTimeForAlltestMFN(instance);
+        maxTransmitionForAlltestMFN(instance);
+        transimtionTimeForAlltestMFN(instance);
+        arPMFtestMFN(instance);
+        CDFtestMFN(instance);
+    }
+        private static void calculateLeadTimeForAlltestMFN(MFN instance) {
         int[] lead = instance.calculateLeadTimeForAll();
         int[] lead_correct = {12, 19, 38, 33};
         for (int i = 0; i < lead.length; i++) { 
@@ -60,29 +84,12 @@ public class Main {
         }
     }
 
-    private static void testMFN() {
-                
-        int m1 = 5;
-        int[] W = {4, 3, 2, 3, 2};
-        double[] C = {10, 15, 5, 15, 20};
-        int[] L = {5, 7, 6, 25, 8};
-        double[] R = {0.7, 0.65, 0.67, 0.71, 0.75};
-        double[] rho = {0.1, 0.3, 0.5, 0.7, 0.9};
+    private static void normalCDFtestMFN(MFN instance) {
+        double z1 = 2;
+        double p_expected = 0.97725;
+        double p1 = instance.normalCDF(z1);
 
-        //1,2,
-        // 1,3,5
-        // 4,3,2
-        // 4,5,
-
-        MFN instance = new MFN(m1, W, C, L, R, rho);
-        instance.printMPs();
-        
-        instance.getMPs("MPs0.csv");
-        calculateLeadTimeForAlltestMFN(instance);
-        maxTransmitionForAlltestMFN(instance);
-        transimtionTimeForAlltestMFN(instance);
-        arPMFtestMFN(instance);
-        CDFtestMFN(instance);
     }
+
 
 }
