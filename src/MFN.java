@@ -211,7 +211,12 @@ public class MFN {
         return first_compontent * Math.sqrt( Math.sqrt(first_root_elemetnt)  - second_root_element);
     }
 
+    // 12b equation
     
+    public int worstCaseNormalSampleSize(double diviation, double eps) {
+        return (int) Math.ceil( Math.pow(normalICDF(1 -diviation/2) / (2 * eps), 2));
+    }
+
     public void test() {
         validataInputTest();
         validateRvaluesTest();

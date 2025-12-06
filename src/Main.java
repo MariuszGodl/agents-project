@@ -35,6 +35,7 @@ public class Main {
         CDFtestMFN(instance);
         normalCDFtestMFN(instance);
         normalICDFtestMFN(instance);
+        worstCaseNormalSampleSizetestMFN(instance);
     }
         private static void calculateLeadTimeForAlltestMFN(MFN instance) {
         int[] lead = instance.calculateLeadTimeForAll();
@@ -169,6 +170,48 @@ public class Main {
         // Przy error_rate = 0.001 test by nie przeszedł.
         if ( Math.abs(z6 - z6_expected) > error_rate ){
             System.out.println("Error: normalICDFtestMFN works incorrect for p=" + p6 + ", z:" + z6 + " z_expected: " + z6_expected);
+        }
+    }
+
+    private static void worstCaseNormalSampleSizetestMFN(MFN instance) {
+        double error_rate = 1.0e-2;
+        // Case 1: Standard (95% Confidence, 5% Error)
+        double err = 0.05;
+        double diviation = 0.05;
+        int n_expected = 385;
+        int n = instance.worstCaseNormalSampleSize(diviation, err);
+        
+        if ( Math.abs((double)n  / n_expected -1) > error_rate ) { 
+            System.out.println("Error: worstCaseNormalSampleSizetestMFN Case 1 works incorrect for n:" + n + " p_expected: " + n_expected);
+        }
+
+        // Case 2: High Confidence (99% Confidence, 5% Error)
+        err = 0.05;
+        diviation = 0.01;
+        n_expected = 664;
+        n = instance.worstCaseNormalSampleSize(diviation, err);
+        if ( Math.abs((double)n  / n_expected -1) > error_rate )  { 
+            System.out.println("Error: worstCaseNormalSampleSizetestMFN Case 2 works incorrect for n:" + n + " p_expected: " + n_expected);
+        }
+
+        // Case 3: High Precision (95% Confidence, 1% Error)
+        err = 0.01;
+        diviation = 0.05;
+        n_expected = 9604;
+        n = instance.worstCaseNormalSampleSize(diviation, err);
+
+        if ( Math.abs((double)n  / n_expected -1) > error_rate  ) { 
+            System.out.println("Error: worstCaseNormalSampleSizetestMFN Case 3 works incorrect for n:" + n + " p_expected: " + n_expected);
+        }
+
+        // Case 4: Low Confidence (90% Confidence, 10% Error)
+        err = 0.10;
+        diviation = 0.10;
+        n_expected = 68;
+        n = instance.worstCaseNormalSampleSize(diviation, err);
+
+        if ( Math.abs((double)n  / n_expected -1) > error_rate  ) { 
+            System.out.println("Error: worstCaseNormalSampleSizetestMFN Case 4 works incorrect for n:" + n + " p_expected: " + n_expected);
         }
     }
 }
