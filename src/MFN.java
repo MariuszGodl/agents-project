@@ -198,6 +198,20 @@ public class MFN {
         return res;
     }
 
+    // DESMOS : \sqrt{2}\cdot\operatorname{sgn}\left(2x-1\right)\sqrt{\sqrt{\left(\frac{2}{\pi\cdot1.47}+\frac{\ln\left(1-\left(2x-1\right)^{2}\right)}{2}\right)^{2}-\frac{\ln\left(1-\left(2x-1\right)^{2}\right)}{1.47}}-\left(\frac{2}{\pi\cdot1.47}+\frac{\ln\left(1-\left(2x-1\right)^{2}\right)}{2}\right)}
+    // https://www.academia.edu/9730974/A_handy_approximation_for_the_error_function_and_its_inverse
+    
+    public double normalICDF(double u) {
+        double first_compontent = Math.sqrt(2) * Math.signum(2 * u - 1);
+        double inner_log = Math.log( 1 - ( Math.pow( 2*u - 1, 2) ) );
+        double a = 0.147;
+        double first_root_elemetnt = Math.pow(2 / (Math.PI * a) + inner_log / 2, 2) - inner_log / a;
+        double second_root_element = 2 / (Math.PI * a) + inner_log / 2;
+
+        return first_compontent * Math.sqrt( Math.sqrt(first_root_elemetnt)  - second_root_element);
+    }
+
+    
     public void test() {
         validataInputTest();
         validateRvaluesTest();
