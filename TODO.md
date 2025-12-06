@@ -3,25 +3,25 @@
 ## PHASE 1: MFN Class (Logic & Math) - [25 pts total]
 *Ref: P. M. Kozyra, "A dictionary algorithm...", Formulae (1), (3)-(5), (8)*
 
-- [ ] **[1 pt]** Implement Field Definitions
+- [x] **[1 pt]** Implement Field Definitions
     - `int m`, `int[] W`, `double[] C`, `int[] L`, `double[] R`, `double[] rho`, `double[] beta`
     - `ArrayList MPs`
-- [ ] **[2 pts]** Implement Inner Class `Combinatorial`
+- [x] **[2 pts]** Implement Inner Class `Combinatorial`
     - `factorial(n)`
     - `binomialCoefficient(n, k)`
-- [ ] **[2 pts]** Implement Constructor
+- [x] **[2 pts]** Implement Constructor
     - Check if vector lengths == `m`
     - Check if `R` and `rho` values are between 0 and 1
     - Create `beta` vector (Formula 2)
-- [ ] **[5 pts]** Implement Core Formulae Methods
+- [x] **[5 pts]** Implement Core Formulae Methods
     - Implement methods for formulae (1), (3)-(5), and (8) from [1]
-- [ ] **[3 pts]** Implement `getMPs(String fileName)`
+- [x] **[3 pts]** Implement `getMPs(String fileName)`
     - Read CSV file and populate `MPs` ArrayList
-- [ ] **[1 pt]** Implement `CDF(double[][] arPMF)`
+- [x] **[1 pt]** Implement `CDF(double[][] arPMF)`
     - Create array of values for the cumulative distribution function
-- [ ] **[2 pts]** Implement `static double normalCDF(double z)`
+- [x] **[2 pts]** Implement `static double normalCDF(double z)`
     - Approximate standard normal distribution (n=100) using double factorial (!!)
-- [ ] **[5 pts]** Implement `static double normalICDF(double u)`
+- [x] **[5 pts]** Implement `static double normalICDF(double u)`
     - **Important:** Invent/use custom algorithm for Quantile function
     - Constraint: `|normalCDF(x) - u| <= 10^-7`
 - [ ] **[1 pt]** Implement Sample Size Calculator

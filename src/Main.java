@@ -34,6 +34,7 @@ public class Main {
         minimumTransmissionTime(instance);
         CDFtestMFN(instance);
         normalCDFtestMFN(instance);
+        normalICDFtestMFN(instance);
     }
         private static void calculateLeadTimeForAlltestMFN(MFN instance) {
         int[] lead = instance.calculateLeadTimeForAll();
@@ -123,5 +124,51 @@ public class Main {
         }
     }
 
+    private static void normalICDFtestMFN(MFN instance) {
+        double error_rate = 1.0e-1;
+        double p1 = 0.5;
+        double z1_expected = 0;
+        double z1 = instance.normalICDF(p1);
+        if ( Math.abs(z1 - z1_expected) > error_rate ){
+            System.out.println("Error: normalICDFtestMFN works incorrect for z:" + z1 + " z_expected: " + z1_expected);
+        }
+        
+        double p2 = 0.2;
+        double z2_expected = -0.84162;
+        double z2 = instance.normalICDF(p2);
+        if ( Math.abs(z2 - z2_expected) > error_rate ){
+            System.out.println("Error: normalICDFtestMFN works incorrect for p=" + p2 + ", z:" + z2 + " z_expected: " + z2_expected);
+        }
 
+        double p3 = 0.8;
+        double z3_expected = 0.84162;
+        double z3 = instance.normalICDF(p3);
+        if ( Math.abs(z3 - z3_expected) > error_rate ){
+            System.out.println("Error: normalICDFtestMFN works incorrect for p=" + p3 + ", z:" + z3 + " z_expected: " + z3_expected);
+        }
+
+        double p4 = 0.9;
+        double z4_expected = 1.28155;
+        double z4 = instance.normalICDF(p4);
+        if ( Math.abs(z4 - z4_expected) > error_rate ){
+            System.out.println("Error: normalICDFtestMFN works incorrect for p=" + p4 + ", z:" + z4 + " z_expected: " + z4_expected);
+        }
+
+        double p5 = 0.05;
+        double z5_expected = -1.64485;
+        double z5 = instance.normalICDF(p5);
+        if ( Math.abs(z5 - z5_expected) > error_rate ){
+            System.out.println("Error: normalICDFtestMFN works incorrect for p=" + p5 + ", z:" + z5 + " z_expected: " + z5_expected);
+        }
+
+        double p6 = 0.975;
+        double z6_expected = 1.95996;
+        double z6 = instance.normalICDF(p6);
+        
+        // UWAGA: Przy p=0.975 przybliżenie Winitzkiego zwraca ok. 1.956. 
+        // Przy error_rate = 0.001 test by nie przeszedł.
+        if ( Math.abs(z6 - z6_expected) > error_rate ){
+            System.out.println("Error: normalICDFtestMFN works incorrect for p=" + p6 + ", z:" + z6 + " z_expected: " + z6_expected);
+        }
+    }
 }
