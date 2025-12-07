@@ -36,8 +36,10 @@ public class Main {
         normalCDFtestMFN(instance);
         normalICDFtestMFN(instance);
         worstCaseNormalSampleSizetestMFN(instance);
+        randomSSVtestMFN(instance);
     }
-        private static void calculateLeadTimeForAlltestMFN(MFN instance) {
+
+    private static void calculateLeadTimeForAlltestMFN(MFN instance) {
         int[] lead = instance.calculateLeadTimeForAll();
         int[] lead_correct = {12, 19, 38, 33};
         for (int i = 0; i < lead.length; i++) { 
@@ -99,6 +101,8 @@ public class Main {
             if ( cdf[i][length] < (1 - epsilon_small) ) { 
                 System.out.println("Error: CDFtestMFN works incorrect for i:" + i + " cum_p: " + cdf[i][length]);
             }
+            // Should it be so skewed i knwo
+            //System.out.println(Arrays.toString(cdf[i]));
         }
     }
 
@@ -213,5 +217,14 @@ public class Main {
         if ( Math.abs((double)n  / n_expected -1) > error_rate  ) { 
             System.out.println("Error: worstCaseNormalSampleSizetestMFN Case 4 works incorrect for n:" + n + " p_expected: " + n_expected);
         }
+    }
+
+    private static void randomSSVtestMFN(MFN instance) {
+        double[][] arPMF = instance.arPMF();
+        double[][] arCDF = instance.CDF(arPMF);
+        System.out.println(Arrays.toString(arCDF[0]));
+        double[][] ssv = instance.randomSSV(5, arCDF);
+
+        for(double[] s: ssv) { System.out.println(Arrays.toString(s));}
     }
 }

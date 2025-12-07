@@ -2,6 +2,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 public class MFN {
     private int m ;// number_of_links
@@ -201,6 +202,12 @@ public class MFN {
     // DESMOS : \sqrt{2}\cdot\operatorname{sgn}\left(2x-1\right)\sqrt{\sqrt{\left(\frac{2}{\pi\cdot1.47}+\frac{\ln\left(1-\left(2x-1\right)^{2}\right)}{2}\right)^{2}-\frac{\ln\left(1-\left(2x-1\right)^{2}\right)}{1.47}}-\left(\frac{2}{\pi\cdot1.47}+\frac{\ln\left(1-\left(2x-1\right)^{2}\right)}{2}\right)}
     // https://www.academia.edu/9730974/A_handy_approximation_for_the_error_function_and_its_inverse
     
+    // f(X) = 1/2 * ( 1+ erf(x/sqrt(2)))
+    // 2 y = 1 = erf(x/sqt(2))
+    // 2 y - 1 = erf(x/sqrt)
+    // erf^-1(2y -1) = x / sqrt(2)
+    // x = sqn ( 2y-1) * erf^-1(2y -1) * sqrt(2)
+ 
     public double normalICDF(double u) {
         double first_compontent = Math.sqrt(2) * Math.signum(2 * u - 1);
         double inner_log = Math.log( 1 - ( Math.pow( 2*u - 1, 2) ) );
@@ -215,6 +222,41 @@ public class MFN {
     
     public int worstCaseNormalSampleSize(double diviation, double eps) {
         return (int) Math.ceil( Math.pow(normalICDF(1 -diviation/2) / (2 * eps), 2));
+    }
+
+    
+    
+    private double randomSSVOneCapacity(double[] cdf, int Node_index, Random rand) {
+        double u = rand.nextDouble();
+
+        for (int k = 0; k < cdf.length; k++) {
+            if (cdf[k] >= u) {
+                return (double) k * C[Node_index]; 
+            }
+        }
+        
+        return (double) (cdf.length - 1) * C[Node_index];
+    }
+
+    private double[] randSSVOneSample(double[][] arCDF, Random rand) {
+        double[] sample = new double[arCDF.length];
+
+        for (int i = 0; i < arCDF.length; i++ ) {
+            sample[i] = randomSSVOneCapacity(arCDF[i], i, rand);
+        }
+
+        return sample;
+    }
+
+    public double[][] randomSSV(int N, double[][]arCDF) {
+        double[][] ssv = new double[N][arCDF.length];
+        Random rand = new Random();
+
+        for (int i = 0; i < N ; i++) {
+            ssv[i] = randSSVOneSample(arCDF, rand);
+        }
+
+        return ssv;
     }
 
     public void test() {

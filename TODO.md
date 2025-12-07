@@ -24,7 +24,7 @@
 - [x] **[5 pts]** Implement `static double normalICDF(double u)`
     - **Important:** Invent/use custom algorithm for Quantile function
     - Constraint: `|normalCDF(x) - u| <= 10^-7`
-- [ ] **[1 pt]** Implement Sample Size Calculator
+- [x] **[1 pt]** Implement Sample Size Calculator
     - Based on Fishman Formula (12b) [2]
 - [ ] **[3 pts]** Implement `randomSSV(int N, double[][] arCDF)`
     - Generate `N` random SSVs
