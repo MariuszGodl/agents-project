@@ -52,6 +52,9 @@ public class SSVGenerator extends Agent {
         this.mfn.getMPs(path);
         mfn.printMPs();
         System.out.println(mfn);
+        // ask user anout the n value
+        int N = 5;
+        mfn.randomSSV(m, null)
     }
 
 }
