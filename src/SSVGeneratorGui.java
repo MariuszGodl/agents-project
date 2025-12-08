@@ -24,7 +24,7 @@ public class SSVGeneratorGui extends JFrame {
 
     private void setupGui() {
         setTitle("SSV Generator");
-        setSize(400, 200);
+        setSize(700, 500);
         setLayout(new GridLayout(4, 1));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -122,7 +122,7 @@ public class SSVGeneratorGui extends JFrame {
             agent.handleGuiInput(path, m, W, C, L, R, rh);
 
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Invalid epsilon/delta.");
+            JOptionPane.showMessageDialog(this, "Invalid data");
         }
     }
 

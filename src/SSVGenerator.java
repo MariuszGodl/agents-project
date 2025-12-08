@@ -11,6 +11,7 @@ import jade.domain.FIPAAgentManagement.ServiceDescription;
 import java.util.*;
 
 public class SSVGenerator extends Agent {
+    private MFN mfn;
     private double epsilon;
     private double delta;
     private SSVGeneratorGui gui;
@@ -47,9 +48,8 @@ public class SSVGenerator extends Agent {
     }
 
     public void handleGuiInput(String path, int m, int[] W, double[] C, int[] L, double[] R, double[] rh) {
-    // Validate again if needed
-    // Then start some behavior
-    //addBehaviour(new YourMFNBehaviour(csvPath, eps, del));
+        this.mfn = new MFN(path, m, W, C, L, R, rh, epsilon, delta);
+        this.mfn.getMPs(path);
     }
 
 }
