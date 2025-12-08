@@ -26,7 +26,7 @@
     - Constraint: `|normalCDF(x) - u| <= 10^-7`
 - [x] **[1 pt]** Implement Sample Size Calculator
     - Based on Fishman Formula (12b) [2]
-- [ ] **[3 pts]** Implement `randomSSV(int N, double[][] arCDF)`
+- [x] **[3 pts]** Implement `randomSSV(int N, double[][] arCDF)`
     - Generate `N` random SSVs
     - Use Inverse CDF method or Chen and Asau Guide Table Method [3]
 
