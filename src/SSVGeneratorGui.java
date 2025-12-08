@@ -2,12 +2,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.util.Arrays;
 
 public class SSVGeneratorGui extends JFrame {
     private final SSVGenerator agent;
 
-    private JTextField epsilonField;
-    private JTextField deltaField;
+    private JTextField num_of_links_Field;
+    private JTextField components_number_v_Field;
+    private JTextField components_capacities_v_Field;
+    private JTextField lead_time_v_Field;
+    private JTextField component_reliability_v_Field;
+    private JTextField correlation_between_faults_v_Field;
     private JTextField fileField;
 
     public SSVGeneratorGui(SSVGenerator agent) {
@@ -23,7 +28,7 @@ public class SSVGeneratorGui extends JFrame {
         setLayout(new GridLayout(4, 1));
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        // --- FILE PICKER ---
+        // File selection panel
         JPanel filePanel = new JPanel(new BorderLayout());
         fileField = new JTextField();
         fileField.setEditable(false);
@@ -34,18 +39,36 @@ public class SSVGeneratorGui extends JFrame {
         filePanel.add(fileField, BorderLayout.CENTER);
         filePanel.add(chooseBtn, BorderLayout.EAST);
 
-        // --- EPSILON / DELTA FIELDS ---
-        JPanel paramsPanel = new JPanel(new GridLayout(2, 2));
-        paramsPanel.add(new JLabel("Epsilon:"));
-        epsilonField = new JTextField();
-        paramsPanel.add(epsilonField);
+        // MFN parameters panel
+        JPanel paramsPanel = new JPanel(new GridLayout(6, 2));
+        
+        paramsPanel.add(new JLabel("The number of links:"));
+        num_of_links_Field = new JTextField();
+        paramsPanel.add(num_of_links_Field);
 
-        paramsPanel.add(new JLabel("Delta:"));
-        deltaField = new JTextField();
-        paramsPanel.add(deltaField);
+        paramsPanel.add(new JLabel("The component numbers vector:"));
+        components_number_v_Field = new JTextField();
+        paramsPanel.add(components_number_v_Field);
 
-        // --- RUN BUTTON ---
-        JButton runBtn = new JButton("Run MFN");
+        paramsPanel.add(new JLabel("The component capacities vector:"));
+        components_capacities_v_Field = new JTextField();
+        paramsPanel.add(components_capacities_v_Field);
+
+        paramsPanel.add(new JLabel("The lead time vector:"));
+        lead_time_v_Field = new JTextField();
+        paramsPanel.add(lead_time_v_Field);
+
+        paramsPanel.add(new JLabel("The component reliabilities vector:"));
+        component_reliability_v_Field = new JTextField();
+        paramsPanel.add(component_reliability_v_Field);
+
+        paramsPanel.add(new JLabel("The vector of the correlation between the faults of the components:"));
+        correlation_between_faults_v_Field = new JTextField();
+        paramsPanel.add(correlation_between_faults_v_Field);
+
+
+        // Send button
+        JButton runBtn = new JButton("Send Data");
         runBtn.addActionListener(e -> sendToAgent());
 
         add(filePanel);
@@ -65,8 +88,30 @@ public class SSVGeneratorGui extends JFrame {
 
     private void sendToAgent() {
         try {
-            double eps = Double.parseDouble(epsilonField.getText());
-            double del = Double.parseDouble(deltaField.getText());
+            /* fields in MFN.java
+            private int m ;// number_of_links
+            private int[] W; // component number vector
+            private double[] C; // component capacity vector
+            private int[] L; // lead time vector
+            private double[] R; // component reliability vector
+            private double[] rho; // vector of the correlation between the faults of the components
+            */
+            int m = Integer.parseInt(num_of_links_Field.getText());
+            int[] W = Arrays.stream(components_number_v_Field.getText().split(","))
+                            .mapToInt(Integer::parseInt)
+                            .toArray();
+            double[] C = Arrays.stream(components_capacities_v_Field.getText().split(","))
+                            .mapToDouble(Double::parseDouble)
+                            .toArray();
+            int[] L = Arrays.stream(lead_time_v_Field.getText().split(","))
+                            .mapToInt(Integer::parseInt)
+                            .toArray();
+            double[] R = Arrays.stream(component_reliability_v_Field.getText().split(","))
+                            .mapToDouble(Double::parseDouble)
+                            .toArray();
+            double[] rh = Arrays.stream(correlation_between_faults_v_Field.getText().split(","))
+                            .mapToDouble(Double::parseDouble)
+                            .toArray();
             String path = fileField.getText();
 
             if (path == null || path.isEmpty()) {
@@ -74,8 +119,7 @@ public class SSVGeneratorGui extends JFrame {
                 return;
             }
 
-            // This calls a method in the agent — YOU create this method.
-            agent.handleGuiInput(path, eps, del);
+            agent.handleGuiInput(path, m, W, C, L, R, rh);
 
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Invalid epsilon/delta.");

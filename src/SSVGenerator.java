@@ -46,7 +46,7 @@ public class SSVGenerator extends Agent {
         //registerAgent();
     }
 
-    public void handleGuiInput(String csvPath, double eps, double del) {
+    public void handleGuiInput(String path, int m, int[] W, double[] C, int[] L, double[] R, double[] rh) {
     // Validate again if needed
     // Then start some behavior
     //addBehaviour(new YourMFNBehaviour(csvPath, eps, del));
