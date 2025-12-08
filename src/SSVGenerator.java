@@ -18,27 +18,38 @@ public class SSVGenerator extends Agent {
     protected void setup() {
         // Get agent arguments
         Object[] args = getArguments();
+        System.out.println("SSVGenerator Agent "+getLocalName()+" started.");
         if (args != null && args.length == 2) {
             try {
                 epsilon = Double.parseDouble((String) args[0]);
                 delta = Double.parseDouble((String) args[1]);
                 if (epsilon < 0 || epsilon > 1 || delta < 0 || delta > 1) {
-                    system.out.println("Epsilon and Delta must be in the range [0, 1]. Terminating agent.");
+                    System.out.println("Epsilon and Delta must be in the range [0, 1]. Terminating agent.");
                     doDelete();
+                    return;
                 }
             } catch (NumberFormatException e) {
-                system.out.println("Invalid arguments. Terminating agent.");
+                System.out.println("Invalid arguments. Terminating agent.");
                 doDelete();
+                return;
             }
         } else {
-            system.out.println("Invalid arguments. Terminating agent.");
+            System.out.println("Invalid arguments. Terminating agent.");
                 doDelete();
+                return;
         }
         // Create and show the GUI
         gui = new SSVGeneratorGui(this);
         gui.showGui();
 
         // Register the agent with the DF
-        registerAgent();
+        //registerAgent();
     }
+
+    public void handleGuiInput(String csvPath, double eps, double del) {
+    // Validate again if needed
+    // Then start some behavior
+    //addBehaviour(new YourMFNBehaviour(csvPath, eps, del));
+    }
+
 }
