@@ -48,8 +48,10 @@ public class SSVGenerator extends Agent {
     }
 
     public void handleGuiInput(String path, int m, int[] W, double[] C, int[] L, double[] R, double[] rh) {
-        this.mfn = new MFN(path, m, W, C, L, R, rh, epsilon, delta);
+        this.mfn = new MFN(m, W, C, L, R, rh);
         this.mfn.getMPs(path);
+        mfn.printMPs();
+        System.out.println(mfn);
     }
 
 }

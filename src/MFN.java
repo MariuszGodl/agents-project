@@ -512,4 +512,18 @@ public class MFN {
         } catch (IllegalArgumentException ignore) {}
     }
 
+    @Override
+    public String toString() {
+        return "MFN{" +
+                "m=" + m +
+                ", W=" + Arrays.toString(W) +
+                ", C=" + Arrays.toString(C) +
+                ", L=" + Arrays.toString(L) +
+                ", R=" + Arrays.toString(R) +
+                ", rho=" + Arrays.toString(rho) +
+                ", beta=" + Arrays.toString(beta) +
+                ", MPs=" + MPs +
+                '}';
+    }
+
 }
