@@ -52,9 +52,11 @@ public class SSVGenerator extends Agent {
         this.mfn.getMPs(path);
         mfn.printMPs();
         System.out.println(mfn);
-        // ask user anout the n value
-        int N = 5;
-        mfn.randomSSV(m, null)
-    }
+        int N = 5; 
+        double[][]arPDF = mfn.arPMF(); 
+        double[][] arCDF = mfn.CDF(arPDF);
+        double[][] ssv = mfn.randomSSV(N, arCDF);
 
+        for ( double[] s : ssv) { System.out.println(Arrays.toString(s));}
+    }
 }

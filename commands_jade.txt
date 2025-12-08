@@ -1,5 +1,5 @@
 COMPILE:
 javac --release 8 -classpath jade_bin\jade\lib\jade.jar -d classes src\*.java
-
+javac -classpath jade_bin/jade/lib/jade.jar -d classes src/*.java
 RUN:
 java "-cp" "jade_bin\jade\lib\jade.jar;classes" jade.Boot -gui -agents "SSVGenerator:SSVGenerator(1, 1)"
