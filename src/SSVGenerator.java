@@ -52,11 +52,53 @@ public class SSVGenerator extends Agent {
         this.mfn.getMPs(path);
         mfn.printMPs();
         System.out.println(mfn);
-        int N = 5; 
+        int N = mfn.worstCaseNormalSampleSize(epsilon, delta); 
         double[][]arPDF = mfn.arPMF(); 
         double[][] arCDF = mfn.CDF(arPDF);
         double[][] ssv = mfn.randomSSV(N, arCDF);
 
         for ( double[] s : ssv) { System.out.println(Arrays.toString(s));}
+
+        AID tt = findTTAgent();
+        SSV_data data = new SSV_data();
+        data.m = m;
+        data.W = W;
+        data.L = L;
+        data.C = C;
+        data.R = R;
+        data.rh = rh;
+        data.mpsPath = path;
+        data.ssv = ssv;
+
+        try {
+            ACLMessage msg = new ACLMessage(ACLMessage.REQUEST);
+            msg.addReceiver(tt);
+            msg.setContentObject(data);
+            send(msg);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
+    private AID findTTAgent() {
+        // Search for TT agents in the DF
+        DFAgentDescription template = new DFAgentDescription();
+        ServiceDescription sd = new ServiceDescription();
+        sd.setType("TT-agent");
+        template.addServices(sd);
+
+        try {
+            DFAgentDescription[] result = DFService.search(this, template);
+            if (result.length > 0) {
+                System.out.println("Found TT agent: " + result[0].getName().getLocalName());
+                return result[0].getName();
+            } else {
+                System.out.println("No TT agents found.");
+                return null;
+            }
+        } catch (FIPAException fe) {
+            fe.printStackTrace();
+            return null;
+        }
+    } 
 }
