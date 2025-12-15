@@ -1,14 +1,12 @@
-// jade imports
 import jade.core.Agent;
+import jade.core.AID;
 import jade.core.behaviours.*;
 import jade.lang.acl.ACLMessage;
-import jade.lang.acl.MessageTemplate;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
-import jade.domain.FIPAAgentManagement.DFAgentDescription;
-import jade.domain.FIPAAgentManagement.ServiceDescription;
-// java imports
-import java.util.*;
+import jade.domain.FIPAAgentManagement.*;
+
+import java.util.Arrays;
 
 public class SSVGenerator extends Agent {
     private MFN mfn;
@@ -43,6 +41,20 @@ public class SSVGenerator extends Agent {
         gui = new SSVGeneratorGui(this);
         gui.showGui();
 
+        addBehaviour(new CyclicBehaviour() {
+            @Override
+            public void action() {
+                ACLMessage msg = receive();
+                if (msg != null) {
+                    System.out.println("SSVGenerator received reply from TT");
+                    System.out.println("Reliability = " + msg.getContent());
+                    doDelete();
+                } else {
+                    block();
+                }
+            }
+        });
+
         // Register the agent with the DF
         //registerAgent();
     }
@@ -57,9 +69,14 @@ public class SSVGenerator extends Agent {
         double[][] arCDF = mfn.CDF(arPDF);
         double[][] ssv = mfn.randomSSV(N, arCDF);
 
-        for ( double[] s : ssv) { System.out.println(Arrays.toString(s));}
+        //for ( double[] s : ssv) { System.out.println(Arrays.toString(s));}
 
         AID tt = findTTAgent();
+        if (tt == null) {
+            System.out.println("TT agent not found");
+            doDelete();
+            return;
+        }
         SSV_data data = new SSV_data();
         data.m = m;
         data.W = W;

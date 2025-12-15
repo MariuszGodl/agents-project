@@ -39,6 +39,7 @@ public class TT extends Agent {
             public void action() {
                 ACLMessage msg = receive();
                 if (msg != null) {
+                    System.out.println("TT received message");
                     process(msg);
                 } else {
                     block();
@@ -66,6 +67,8 @@ public class TT extends Agent {
 
     private void process(ACLMessage msg) {
         try {
+            System.out.println("TT: processing payload...");
+
             SSV_data data = (SSV_data) msg.getContentObject();
 
             writeSSV(data.ssv);
@@ -73,12 +76,13 @@ public class TT extends Agent {
             int success = 0;
             for (double[] X : data.ssv) {
                 double TdX = computeTdX(X);
+                // TODO check if TdX <= T
                 if (TdX <= T)
                     success++;
             }
 
             double reliability = (double) success / data.ssv.length;
-
+            System.out.println("TT: reliability computed: " + reliability);
             ACLMessage reply = msg.createReply();
             reply.setPerformative(ACLMessage.INFORM);
             reply.setContent(String.valueOf(reliability));
