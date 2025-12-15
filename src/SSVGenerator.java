@@ -5,6 +5,7 @@ import jade.lang.acl.ACLMessage;
 import jade.domain.DFService;
 import jade.domain.FIPAException;
 import jade.domain.FIPAAgentManagement.*;
+import jade.lang.acl.MessageTemplate;
 
 import java.util.Arrays;
 
@@ -44,7 +45,11 @@ public class SSVGenerator extends Agent {
         addBehaviour(new CyclicBehaviour() {
             @Override
             public void action() {
-                ACLMessage msg = receive();
+                MessageTemplate mt = MessageTemplate.and(
+                    MessageTemplate.MatchPerformative(ACLMessage.INFORM),
+                    MessageTemplate.MatchSender(new AID("TTAgent", AID.ISLOCALNAME))
+                );
+                ACLMessage msg = receive(mt);
                 if (msg != null) {
                     System.out.println("SSVGenerator received reply from TT");
                     System.out.println("Reliability = " + msg.getContent());
@@ -54,9 +59,6 @@ public class SSVGenerator extends Agent {
                 }
             }
         });
-
-        // Register the agent with the DF
-        //registerAgent();
     }
 
     public void handleGuiInput(String path, int m, int[] W, double[] C, int[] L, double[] R, double[] rh) {

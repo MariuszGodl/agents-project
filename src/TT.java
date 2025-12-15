@@ -76,7 +76,6 @@ public class TT extends Agent {
             int success = 0;
             for (double[] X : data.ssv) {
                 double TdX = computeTdX(X);
-                // TODO check if TdX <= T
                 if (TdX <= T)
                     success++;
             }

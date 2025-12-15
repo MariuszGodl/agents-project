@@ -14,6 +14,7 @@ public class SSVGeneratorGui extends JFrame {
     private JTextField component_reliability_v_Field;
     private JTextField correlation_between_faults_v_Field;
     private JTextField fileField;
+    private JButton runBtn;
 
     public SSVGeneratorGui(SSVGenerator agent) {
         super(agent.getLocalName());
@@ -66,9 +67,8 @@ public class SSVGeneratorGui extends JFrame {
         correlation_between_faults_v_Field = new JTextField();
         paramsPanel.add(correlation_between_faults_v_Field);
 
-
         // Send button
-        JButton runBtn = new JButton("Send Data");
+        runBtn = new JButton("Send Data");
         runBtn.addActionListener(e -> sendToAgent());
 
         add(filePanel);
@@ -120,7 +120,9 @@ public class SSVGeneratorGui extends JFrame {
             }
 
             agent.handleGuiInput(path, m, W, C, L, R, rh);
-
+            runBtn.setEnabled(false);
+            runBtn.setText("Data sent");
+            
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Invalid data");
         }
