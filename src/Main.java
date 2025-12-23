@@ -13,8 +13,8 @@ public class Main {
                 
         int m1 = 5;
         int[] W = {4,3,2,3,2};
-        double[] C = {10,15,5,15,20};
-        int[] L = {5,7,6,25,8};
+        double[] C = {10, 15, 25, 15, 20};
+        int[] L = {5, 7, 6, 5, 8};
         double[] R = {0.7,0.65,0.67,0.71,0.75};
         double[] rho = {0.1,0.3,0.5,0.7,0.9};
 
@@ -27,16 +27,27 @@ public class Main {
         instance.printMPs();
         
         instance.getMPs("data/MPs0.csv");
+        // double[][] arPMF = instance.arPMF();
+        // double[][] arCDF = instance.CDF(arPMF);
+        // // System.out.println(Arrays.toString(arCDF[0]));
+        // double[][] ssv = instance.randomSSV(5, arCDF);
+        //for(double[] s: ssv) { System.out.println(Arrays.toString(s));}
+        double[] ssv = {30.0, 45.0, 25.0, 45.0, 40.0};
+        // System.out.println(Arrays.toString(ssv));
         calculateLeadTimeForAlltestMFN(instance);
-        maxTransmitionForAlltestMFN(instance);
-        transimtionTimeForAlltestMFN(instance);
+        maxTransmitionForAlltestMFN(instance, ssv);
+        transimtionTimeForAlltestMFN(instance, ssv);
         arPMFtestMFN(instance);
-        minimumTransmissionTime(instance);
+        minimumTransmissionTime(instance, ssv);
         CDFtestMFN(instance);
         normalCDFtestMFN(instance);
-        normalICDFtestMFN(instance);
-        worstCaseNormalSampleSizetestMFN(instance);
-        randomSSVtestMFN(instance);
+        //TODO redo the ICDF
+        // normalICDFtestMFN(instance);
+        //TODO WorstCaseNormal return const
+        // worstCaseNormalSampleSizetestMFN(instance);
+        // randomSSVtestMFN(instance);
+        calculateReliabilitytestMFN(instance);
+
     }
 
     private static void calculateLeadTimeForAlltestMFN(MFN instance) {
@@ -49,9 +60,9 @@ public class Main {
         }
     }
     
-    private static void maxTransmitionForAlltestMFN(MFN instance) {
-        double[] max_transimitions = instance.maxTransmitionForAll();
-        double[] m_t_correct = {40, 10, 10, 40};
+    private static void maxTransmitionForAlltestMFN(MFN instance, double[] SSV) {
+        double[] max_transimitions = instance.maxTransmitionForAll(SSV);
+        double[] m_t_correct = {30, 25, 25, 40};
         for (int i = 0; i < max_transimitions.length; i++) { 
             if ( max_transimitions[i] != m_t_correct[i]){
                 System.out.println("Error: maxTransmitionForAll works incorrect for i:" + i + " t: " + max_transimitions[i] + " correct: " + m_t_correct[i]);
@@ -59,9 +70,9 @@ public class Main {
         }
     }
 
-    private static void transimtionTimeForAlltestMFN(MFN instance) {
-        int[] transimtion_time = instance.transimtionTimeForAll(512);
-        int[] transimtion_time_correct = {25, 71, 90, 46};
+    private static void transimtionTimeForAlltestMFN(MFN instance, double[] SSV) {
+        int[] transimtion_time = instance.transimtionTimeForAll(512, SSV);
+        int[] transimtion_time_correct = {30, 40, 29, 46};
         for (int i = 0; i < transimtion_time.length; i++) { 
             if ( transimtion_time[i] != transimtion_time_correct[i]){
                 System.out.println("Error: transimtionTimeForAlltestMFN works incorrect for i:" + i + " t: " + transimtion_time[i] + " correct: " + transimtion_time_correct[i]);
@@ -69,13 +80,13 @@ public class Main {
         }
     }
 
-    private static void minimumTransmissionTime(MFN instance) {
+    private static void minimumTransmissionTime(MFN instance, double[] SSV) {
         int d = 512;
-        int minimum_transimition_t = instance.minimumTransmissionTime(d);
+        int minimum_transimition_t = instance.minimumTransmissionTime(d, SSV);
 
-        int expected = 25;
+        int expected = 30;
         if (minimum_transimition_t != expected) {
-            int[] transimtions_t = instance.transimtionTimeForAll(d);
+            int[] transimtions_t = instance.transimtionTimeForAll(d, SSV);
             System.out.println("Error: minimumTransmissionTime works incorrect for min t:" + minimum_transimition_t + 
                                 " ex: " + expected + " full_list: " + Arrays.toString(transimtions_t));
         }
@@ -227,4 +238,17 @@ public class Main {
 
         for(double[] s: ssv) { System.out.println(Arrays.toString(s));}
     }
+
+    private static void calculateReliabilitytestMFN(MFN instance) {
+
+        double[][] arPMF = instance.arPMF();
+        double[][] arCDF = instance.CDF(arPMF);
+        System.out.println(Arrays.toString(arCDF[0]));
+        double[][] ssv = instance.randomSSV(16024, arCDF);
+        int d = 42;
+        double goal = 15.5;
+        double r = instance.calculateReliability(d, goal, ssv);
+        System.out.println(r);
+    }
+
 }

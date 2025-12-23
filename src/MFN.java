@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
+
 public class MFN {
     private int m ;// number_of_links
     private int[] W; // component number vector
@@ -13,6 +14,8 @@ public class MFN {
     private double[] rho; // vector of the correlation between the faults of the components
     private double[] beta; // beta vector
     private ArrayList<int[]> MPs = new ArrayList<>(); // list of minimal paths
+
+
 
     MFN(int m, int[] W, double[] C, int[] L, double[] R, double[] rho) {
         //check whether the length of vectors W, C, L, R, and rho is equal to m;
@@ -121,30 +124,30 @@ public class MFN {
 
     // 5th function in 1 
     // remember to make it for actual SSV not only components * capacity
-    private double maxTransmition(int[] Mps_local) {
+    private double maxTransmition(int[] Mps_local, double[] SSV) {
         double min = Double.POSITIVE_INFINITY;
         for (int edge: Mps_local) { 
-            if (min > W[edge-1] * C[edge - 1]) { min = W[edge-1] * C[edge - 1]; }
+            // TODO change the W to ssv
+            if (min > SSV[edge - 1]) { min = SSV[edge - 1]; }
          }
         return min;
     }
 
-    public double[] maxTransmitionForAll() {
+    public double[] maxTransmitionForAll(double[] SSV) {
         double[] max_transimitons = new double[MPs.size()];
-
         for (int i = 0; i < MPs.size(); i++ ){
-            max_transimitons[i] = maxTransmition(MPs.get(i));
+            max_transimitons[i] = maxTransmition(MPs.get(i), SSV);
         }
         return max_transimitons;
 
     }
 
     // 3rd function 1
-    private int transimtionTime(int[] Mps_local, int d) {
-        double cp = maxTransmition(Mps_local);
+    private int transimtionTime(int[] Mps_local, int d, double[] SSV) {
+        double cp = maxTransmition(Mps_local, SSV);
         
         if ( cp > 0) {
-            return calculateLeadTime(Mps_local) + (int) Math.ceil((double) d / maxTransmition(Mps_local));
+            return calculateLeadTime(Mps_local) + (int) Math.ceil((double) d / maxTransmition(Mps_local, SSV));
         } else {
             return 0x7FFFFFFF; // max possible positive int
         }
@@ -152,11 +155,11 @@ public class MFN {
     }
 
     // replace d with value given by the system might be int[]
-    public int[] transimtionTimeForAll(int d) {
+    public int[] transimtionTimeForAll(int d, double[] SSV) {
         int[] t = new int[MPs.size()]; 
         
         for ( int i = 0; i < MPs.size(); i++) {
-            t[i] = transimtionTime(MPs.get(i), d);
+            t[i] = transimtionTime(MPs.get(i), d, SSV);
         }
 
         return t;
@@ -164,8 +167,8 @@ public class MFN {
 
     // 8th function 1
     // not sure if it answer the question as we search the smallest price acreoss the all MPS 
-    public int minimumTransmissionTime(int d) {
-        int[] transimtions_t = transimtionTimeForAll(d);
+    public int minimumTransmissionTime(int d, double[] SSV) {
+        int[] transimtions_t = transimtionTimeForAll(d, SSV);
         int min_transimition_t = 0x7FFFFFFF;
         for (int t : transimtions_t) { 
             if ( t < min_transimition_t) { 
@@ -182,7 +185,7 @@ public class MFN {
     }
 
     private double sumApproximation(double z) {
-        int degree_of_apoximation_n = 20;//100;
+        int degree_of_apoximation_n = 100;
         double sum = 0;
         for (int k = 0; k < degree_of_apoximation_n; k++) {
             sum += SeriesElement(z, k);
@@ -198,15 +201,6 @@ public class MFN {
                     sumApproximation(z);
         return res;
     }
-
-    // DESMOS : \sqrt{2}\cdot\operatorname{sgn}\left(2x-1\right)\sqrt{\sqrt{\left(\frac{2}{\pi\cdot1.47}+\frac{\ln\left(1-\left(2x-1\right)^{2}\right)}{2}\right)^{2}-\frac{\ln\left(1-\left(2x-1\right)^{2}\right)}{1.47}}-\left(\frac{2}{\pi\cdot1.47}+\frac{\ln\left(1-\left(2x-1\right)^{2}\right)}{2}\right)}
-    // https://www.academia.edu/9730974/A_handy_approximation_for_the_error_function_and_its_inverse
-    
-    // f(X) = 1/2 * ( 1+ erf(x/sqrt(2)))
-    // 2 y = 1 = erf(x/sqt(2))
-    // 2 y - 1 = erf(x/sqrt)
-    // erf^-1(2y -1) = x / sqrt(2)
-    // x = sqn ( 2y-1) * erf^-1(2y -1) * sqrt(2)
  
     public double normalICDF(double u) {
         double first_compontent = Math.sqrt(2) * Math.signum(2 * u - 1);
@@ -257,6 +251,17 @@ public class MFN {
         }
 
         return ssv;
+    }
+
+    public double calculateReliability(int d, double goal, double[][] SSV) {
+        double reliability = 0;
+        double success = 0;
+        for(double[] x : SSV) {
+            double t = minimumTransmissionTime(d, x);
+            if ( t <= goal ){ success += 1; }
+        }
+        reliability = success / SSV.length;
+        return reliability;
     }
 
     public void test() {
