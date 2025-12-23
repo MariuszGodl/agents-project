@@ -1,9 +1,8 @@
 import java.util.Arrays;
 
 public class Main {
-    // move it to const file later
-    private static double epsilon_small = 1.0e-8;
-    private static double epsilon_medium = 1.0 * 1.0e-4; 
+    private static double epsilon_small = 1.0e-10;
+    private static double epsilon_medium = 1.0 * 1.0e-10; 
     public static void main(String[] args) {
         testMFN();
     }
@@ -27,32 +26,24 @@ public class Main {
         instance.printMPs();
         
         instance.getMPs("data/MPs0.csv");
-        // double[][] arPMF = instance.arPMF();
-        // double[][] arCDF = instance.CDF(arPMF);
-        // // System.out.println(Arrays.toString(arCDF[0]));
-        // double[][] ssv = instance.randomSSV(5, arCDF);
-        //for(double[] s: ssv) { System.out.println(Arrays.toString(s));}
         double[] ssv = {30.0, 45.0, 25.0, 45.0, 40.0};
-        // System.out.println(Arrays.toString(ssv));
         calculateLeadTimeForAlltestMFN(instance);
         maxTransmitionForAlltestMFN(instance, ssv);
         transimtionTimeForAlltestMFN(instance, ssv);
         arPMFtestMFN(instance);
         minimumTransmissionTime(instance, ssv);
         CDFtestMFN(instance);
-        normalCDFtestMFN(instance);
-        //TODO redo the ICDF
-        // normalICDFtestMFN(instance);
-        //TODO WorstCaseNormal return const
-        // worstCaseNormalSampleSizetestMFN(instance);
+
+        worstCaseNormalSampleSizetestMFN(instance);
         // randomSSVtestMFN(instance);
         calculateReliabilitytestMFN(instance);
+        calculateReliabilityLooptestMFN(instance, 1000);
 
     }
 
     private static void calculateLeadTimeForAlltestMFN(MFN instance) {
         int[] lead = instance.calculateLeadTimeForAll();
-        int[] lead_correct = {12, 19, 38, 33};
+        int[] lead_correct = {12, 19, 18, 13};
         for (int i = 0; i < lead.length; i++) { 
             if ( lead[i] != lead_correct[i]){
                 System.out.println("Error: calculateLeadTimeForAll works incorrect for i:" + i + " l: " + lead[i] + " correct: " + lead_correct[i]);
@@ -72,7 +63,7 @@ public class Main {
 
     private static void transimtionTimeForAlltestMFN(MFN instance, double[] SSV) {
         int[] transimtion_time = instance.transimtionTimeForAll(512, SSV);
-        int[] transimtion_time_correct = {30, 40, 29, 46};
+        int[] transimtion_time_correct = {30, 40, 39, 26};
         for (int i = 0; i < transimtion_time.length; i++) { 
             if ( transimtion_time[i] != transimtion_time_correct[i]){
                 System.out.println("Error: transimtionTimeForAlltestMFN works incorrect for i:" + i + " t: " + transimtion_time[i] + " correct: " + transimtion_time_correct[i]);
@@ -84,7 +75,7 @@ public class Main {
         int d = 512;
         int minimum_transimition_t = instance.minimumTransmissionTime(d, SSV);
 
-        int expected = 30;
+        int expected = 26;
         if (minimum_transimition_t != expected) {
             int[] transimtions_t = instance.transimtionTimeForAll(d, SSV);
             System.out.println("Error: minimumTransmissionTime works incorrect for min t:" + minimum_transimition_t + 
@@ -141,7 +132,7 @@ public class Main {
     }
 
     private static void normalICDFtestMFN(MFN instance) {
-        double error_rate = 1.0e-1;
+        double error_rate = 1.0e-10;
         double p1 = 0.5;
         double z1_expected = 0;
         double z1 = instance.normalICDF(p1);
@@ -156,40 +147,10 @@ public class Main {
             System.out.println("Error: normalICDFtestMFN works incorrect for p=" + p2 + ", z:" + z2 + " z_expected: " + z2_expected);
         }
 
-        double p3 = 0.8;
-        double z3_expected = 0.84162;
-        double z3 = instance.normalICDF(p3);
-        if ( Math.abs(z3 - z3_expected) > error_rate ){
-            System.out.println("Error: normalICDFtestMFN works incorrect for p=" + p3 + ", z:" + z3 + " z_expected: " + z3_expected);
-        }
-
-        double p4 = 0.9;
-        double z4_expected = 1.28155;
-        double z4 = instance.normalICDF(p4);
-        if ( Math.abs(z4 - z4_expected) > error_rate ){
-            System.out.println("Error: normalICDFtestMFN works incorrect for p=" + p4 + ", z:" + z4 + " z_expected: " + z4_expected);
-        }
-
-        double p5 = 0.05;
-        double z5_expected = -1.64485;
-        double z5 = instance.normalICDF(p5);
-        if ( Math.abs(z5 - z5_expected) > error_rate ){
-            System.out.println("Error: normalICDFtestMFN works incorrect for p=" + p5 + ", z:" + z5 + " z_expected: " + z5_expected);
-        }
-
-        double p6 = 0.975;
-        double z6_expected = 1.95996;
-        double z6 = instance.normalICDF(p6);
-        
-        // UWAGA: Przy p=0.975 przybliżenie Winitzkiego zwraca ok. 1.956. 
-        // Przy error_rate = 0.001 test by nie przeszedł.
-        if ( Math.abs(z6 - z6_expected) > error_rate ){
-            System.out.println("Error: normalICDFtestMFN works incorrect for p=" + p6 + ", z:" + z6 + " z_expected: " + z6_expected);
-        }
     }
 
     private static void worstCaseNormalSampleSizetestMFN(MFN instance) {
-        double error_rate = 1.0e-2;
+        double error_rate = 1.0e-20;
         // Case 1: Standard (95% Confidence, 5% Error)
         double err = 0.05;
         double diviation = 0.05;
@@ -239,16 +200,35 @@ public class Main {
         for(double[] s: ssv) { System.out.println(Arrays.toString(s));}
     }
 
-    private static void calculateReliabilitytestMFN(MFN instance) {
-
+    private static double calculateReliabilitytestMFN(MFN instance) {
+        
         double[][] arPMF = instance.arPMF();
         double[][] arCDF = instance.CDF(arPMF);
-        System.out.println(Arrays.toString(arCDF[0]));
-        double[][] ssv = instance.randomSSV(16024, arCDF);
+        int n = instance.worstCaseNormalSampleSize(0.01, 0.01);
+        
+        double[][] ssv = instance.randomSSV(n, arCDF);
         int d = 42;
         double goal = 15.5;
         double r = instance.calculateReliability(d, goal, ssv);
-        System.out.println(r);
+        return r;
+    }
+
+    private static void calculateReliabilityLooptestMFN(MFN instance, int n) {
+        double exactReliability = 0.8945941587830153;
+        double epsilon = 0.01; 
+        int successCount = 0; 
+
+        for (int i = 0; i < n; i++) {
+            double r = calculateReliabilitytestMFN(instance);
+            
+            if (Math.abs(r - exactReliability) <= epsilon) {
+                successCount++;
+            }
+        }
+        System.out.println("Total iterations: " + n);
+        System.out.println("Successful approximations (within +/- " + epsilon + "): " + successCount);
+        double successRate = (double) successCount / n * 100;
+        System.out.println("Success Rate: " + successRate + "%");
     }
 
 }

@@ -194,23 +194,126 @@ public class MFN {
         return sum;
     }
 
-    public double normalCDF(double z) { 
+    // public double normalCDF(double z) { 
 
-        double res = 0.5 + 1 / Math.sqrt(2 * Math.PI) * 
-                    Math.pow( Math.E, -1 * z * z * 0.5) * 
-                    sumApproximation(z);
-        return res;
+    //     double res = 0.5 + 1 / Math.sqrt(2 * Math.PI) * 
+    //                 Math.pow( Math.E, -1 * z * z * 0.5) * 
+    //                 sumApproximation(z);
+    //     return res;
+    // }
+    public double normalCDF(double z) {
+    // We compute the series iteratively to avoid factorial overflow.
+    // The instructions require n=100.
+    // Formula: x + x^3/3!! + x^5/5!! + ... 
+    
+    double sum = 0.0;
+    double term = z; // First term (k=0): z^1 / 1!! = z
+    sum += term;
+
+    int degree_of_approximation_n = 100;
+    
+    for (int k = 1; k < degree_of_approximation_n; k++) {
+        // Calculate the next term based on the previous one:
+        // term_k = term_{k-1} * (z^2 / (2k+1))
+        // This avoids calculating (2k+1)!! directly, preventing overflow.
+        term *= (z * z) / (2 * k + 1);
+        sum += term;
     }
+
+    // Apply the rest of the formula [cite: 274]
+    return 0.5 + (1.0 / Math.sqrt(2 * Math.PI)) * Math.exp(-0.5 * z * z) * sum;
+}
+public double normalICDF(double u) {
+    // 1. Handle invalid inputs
+    if (u <= 0.0 || u >= 1.0) {
+        throw new IllegalArgumentException("u must be between 0 and 1");
+    }
+
+    // 2. Handle Symmetry: The standard normal distribution is symmetric around 0.
+    // If u < 0.5, the result is negative. Solve for (1-u) and negate the result.
+    boolean isNegative = false;
+    if (u < 0.5) {
+        u = 1.0 - u;
+        isNegative = true;
+    } else if (u == 0.5) {
+        return 0.0;
+    }
+
+    // 3. Binary Search (Bisection Method)
+    // We search for z in [0, 20]. CDF(20) is effectively 1.0.
+    double low = 0.0;
+    double high = 20.0; 
+    double mid = 0.0;
+    double tolerance = 1.0e-10; // Required precision 
+    int maxIterations = 1000;   // Safety break to prevent infinite loops
+
+    for (int i = 0; i < maxIterations; i++) {
+        mid = (low + high) / 2.0;
+        double calculatedProb = normalCDF(mid);
+
+        // Check difference |normalCDF(x) - u| <= 10^-10
+        if (Math.abs(calculatedProb - u) <= tolerance) {
+            return isNegative ? -mid : mid;
+        }
+
+        // Adjust bounds
+        if (calculatedProb < u) {
+            low = mid;
+        } else {
+            high = mid;
+        }
+    }
+
+    // If tolerance is not met within maxIterations, return best approximation
+    return isNegative ? -mid : mid;
+}
  
-    public double normalICDF(double u) {
-        double first_compontent = Math.sqrt(2) * Math.signum(2 * u - 1);
-        double inner_log = Math.log( 1 - ( Math.pow( 2*u - 1, 2) ) );
-        double a = 0.147;
-        double first_root_elemetnt = Math.pow(2 / (Math.PI * a) + inner_log / 2, 2) - inner_log / a;
-        double second_root_element = 2 / (Math.PI * a) + inner_log / 2;
+    // public double normalICDF(double u) {
+    //     // Handle edge cases
+    //     if (u <= 0 || u >= 1) {
+    //         throw new IllegalArgumentException("u must be between 0 and 1");
+    //     }
 
-        return first_compontent * Math.sqrt( Math.sqrt(first_root_elemetnt)  - second_root_element);
-    }
+    //     // Handle symmetry for the standard normal distribution
+    //     // If u < 0.5, the value x is negative. We solve for (1-u) and negate the result.
+    //     boolean isNegative = false;
+    //     if (u < 0.5) {
+    //         u = 1.0 - u;
+    //         isNegative = true;
+    //     } else if (u == 0.5) {
+    //         return 0.0;
+    //     }
+
+    //     double low = 0.0;
+    //     double high = 20.0; // Sufficiently large bound for Standard Normal
+    //     double mid = 0.0;
+    //     double calculatedProb = 0.0;
+    //     double error = 1.0;
+    //     double tolerance = 1e-10; // Required precision [cite: 550]
+
+    //     // Bisection Search Algorithm
+    //     while (true) {
+    //         mid = (low + high) / 2.0;
+    //         calculatedProb = normalCDF(mid);
+            
+    //         // Calculate error
+    //         error = Math.abs(calculatedProb - u);
+
+    //         // Check termination condition specified in instructions
+    //         if (error <= tolerance) {
+    //             break;
+    //         }
+
+    //         // Adjust bounds
+    //         if (calculatedProb < u) {
+    //             low = mid;
+    //         } else {
+    //             high = mid;
+    //         }
+    //     }
+
+    //     return isNegative ? -mid : mid;
+    // }
 
     // 12b equation
     
