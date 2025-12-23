@@ -12,6 +12,7 @@ import java.io.IOException;
 public class TT extends Agent {
     private double d; // number of units of flow
     private double T; // max transmission time
+    private MFN mfn;
 
     protected void setup() {
         // Get agent arguments
@@ -69,16 +70,11 @@ public class TT extends Agent {
             SSV_data data = (SSV_data) msg.getContentObject();
 
             writeSSV(data.ssv);
+            this.mfn = new MFN(data.m, data.W, data.C, data.L, data.R, data.rh);
+            this.mfn.getMPs(data.mpsPath);
 
-            int success = 0;
-            for (double[] X : data.ssv) {
-                double TdX = computeTdX(X);
-                if (TdX <= T)
-                    success++;
-            }
-
-            double reliability = (double) success / data.ssv.length;
-
+            double reliability = this.mfn.calculateReliability(d, T, data.ssv);
+            System.out.println("!!!!!!!!!!!!!!!!!!Reliability = " + reliability);
             ACLMessage reply = msg.createReply();
             reply.setPerformative(ACLMessage.INFORM);
             reply.setContent(String.valueOf(reliability));
@@ -100,12 +96,5 @@ public class TT extends Agent {
             fw.write("\n");
         }
         fw.close();
-    }
-
-    private double computeTdX(double[] X) {
-        double sum = 0;
-        for (double x : X)
-            sum += x;
-        return sum / d;
     }
 }

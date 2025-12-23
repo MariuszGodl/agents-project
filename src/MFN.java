@@ -143,7 +143,7 @@ public class MFN {
     }
 
     // 3rd function 1
-    private int transimtionTime(int[] Mps_local, int d, double[] SSV) {
+    private int transimtionTime(int[] Mps_local, double d, double[] SSV) {
         double cp = maxTransmition(Mps_local, SSV);
         
         if ( cp > 0) {
@@ -155,7 +155,7 @@ public class MFN {
     }
 
     // replace d with value given by the system might be int[]
-    public int[] transimtionTimeForAll(int d, double[] SSV) {
+    public int[] transimtionTimeForAll(double d, double[] SSV) {
         int[] t = new int[MPs.size()]; 
         
         for ( int i = 0; i < MPs.size(); i++) {
@@ -167,7 +167,7 @@ public class MFN {
 
     // 8th function 1
     // not sure if it answer the question as we search the smallest price acreoss the all MPS 
-    public int minimumTransmissionTime(int d, double[] SSV) {
+    public int minimumTransmissionTime(double d, double[] SSV) {
         int[] transimtions_t = transimtionTimeForAll(d, SSV);
         int min_transimition_t = 0x7FFFFFFF;
         for (int t : transimtions_t) { 
@@ -286,7 +286,7 @@ public class MFN {
         return ssv;
     }
 
-    public double calculateReliability(int d, double goal, double[][] SSV) {
+    public double calculateReliability(double d, double goal, double[][] SSV) {
         double reliability = 0;
         double success = 0;
         for(double[] x : SSV) {
