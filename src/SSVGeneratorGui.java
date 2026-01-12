@@ -96,22 +96,28 @@ public class SSVGeneratorGui extends JFrame {
             private double[] R; // component reliability vector
             private double[] rho; // vector of the correlation between the faults of the components
             */
-            int m = Integer.parseInt(num_of_links_Field.getText());
-            int[] W = Arrays.stream(components_number_v_Field.getText().split(","))
-                            .mapToInt(Integer::parseInt)
-                            .toArray();
-            double[] C = Arrays.stream(components_capacities_v_Field.getText().split(","))
-                            .mapToDouble(Double::parseDouble)
-                            .toArray();
-            int[] L = Arrays.stream(lead_time_v_Field.getText().split(","))
-                            .mapToInt(Integer::parseInt)
-                            .toArray();
-            double[] R = Arrays.stream(component_reliability_v_Field.getText().split(","))
-                            .mapToDouble(Double::parseDouble)
-                            .toArray();
-            double[] rh = Arrays.stream(correlation_between_faults_v_Field.getText().split(","))
-                            .mapToDouble(Double::parseDouble)
-                            .toArray();
+            int m = Integer.parseInt(num_of_links_Field.getText().trim());
+
+            int[] W = Arrays.stream(components_number_v_Field.getText().split("\\s*,\\s*"))
+                    .mapToInt(Integer::parseInt)
+                    .toArray();
+
+            double[] C = Arrays.stream(components_capacities_v_Field.getText().split("\\s*,\\s*"))
+                    .mapToDouble(Double::parseDouble)
+                    .toArray();
+
+            int[] L = Arrays.stream(lead_time_v_Field.getText().split("\\s*,\\s*"))
+                    .mapToInt(Integer::parseInt)
+                    .toArray();
+
+            double[] R = Arrays.stream(component_reliability_v_Field.getText().split("\\s*,\\s*"))
+                    .mapToDouble(Double::parseDouble)
+                    .toArray();
+
+            double[] rh = Arrays.stream(correlation_between_faults_v_Field.getText().split("\\s*,\\s*"))
+                    .mapToDouble(Double::parseDouble)
+                    .toArray();
+
             String path = fileField.getText();
 
             if (path == null || path.isEmpty()) {
